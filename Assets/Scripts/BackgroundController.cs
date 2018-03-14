@@ -27,11 +27,13 @@ namespace SimuUtils {
 		public ArrayList blocks = new ArrayList();
 		public ArrayList humans = new ArrayList();
 		public ArrayList lifts = new ArrayList ();
+
+
 	}
 
 	public class BackgroundController : MonoBehaviour {
 		const int GRID_SIZE = 1;		// 元胞点的大小
-
+		// 装有所有的子对象
 		public ChildObjects childObjects;
 
 		private int height;

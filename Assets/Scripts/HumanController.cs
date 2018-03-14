@@ -181,6 +181,9 @@ namespace SimuUtils
 			father_containers.humans.Add (this);
 		}
 
+		/*
+		 * 脚本初始化  
+		 */ 
 		void Start () {
 			change_new_father_container ();
 
@@ -193,6 +196,7 @@ namespace SimuUtils
 			init_weight ();
 			init_destine ();
 			init_speed ();
+
 
 			Debug.Log ("Add a Human.");
 		}
