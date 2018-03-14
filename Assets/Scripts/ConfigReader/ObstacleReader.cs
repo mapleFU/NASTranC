@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ObstacleReader : BaseReader
-{
+public class ObstacleReader {
+	
 	
 }
 

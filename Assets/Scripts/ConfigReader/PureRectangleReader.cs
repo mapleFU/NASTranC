@@ -14,11 +14,11 @@ public abstract class PureRectangleReader : BaseReader {
 		demo = filter_string;
 	}
 		
-	public void parse() {
+	public override void parse() {
 		points = parse_point_pairs ();
 	}
 
-	public string get_class_name () {
+	public override string get_class_name () {
 		return demo;
 	}
 }

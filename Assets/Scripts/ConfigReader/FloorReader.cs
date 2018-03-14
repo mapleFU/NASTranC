@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class FloorReader : BaseReader {
+	public FloorReader(TextReader reader): base(reader) {}
+
 	const string BASIC_CONFIG = "Floor";
 
-	public void generate () {
+	public override void generate () {
 		
 	}
 
-	public void parse() {
-		checked_line (BASIC_CONFIG);
+	public override void parse() {
+		
+	}
 
-		checked_line (BASIC_CONFIG);
+	public override string get_class_name () {
+		return BASIC_CONFIG;
 	}
 }
