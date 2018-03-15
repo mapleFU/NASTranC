@@ -18,7 +18,7 @@ namespace SimuUtils
 
 
 		// Use this for initialization
-		void Start () {
+		public override void Start () {
 			
 //			var daddy = transform.parent;
 //			if (!daddy) print("Object has no parent");

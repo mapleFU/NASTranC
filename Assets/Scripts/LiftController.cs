@@ -8,6 +8,11 @@ using UnityEngine;
 namespace SimuUtils
 {
 	// 采用电梯后速度如何变化
+
+	/*
+	 * 脚本用于将人传送到新的层上
+	 * 楼梯口对象
+	 */ 
 	public class LiftController: DestController
 	{
 		// 通向的GameObject, 不可以是null, 应该是BackGroundController控制的
@@ -15,7 +20,7 @@ namespace SimuUtils
 
 		private BackgroundController bkg_ctrl;
 
-		public void Start()
+		public override void Start()
 		{
 			base.Start ();
 			bkg_ctrl = this.gameObject.transform.parent.gameObject.GetComponent<BackgroundController> ();
@@ -48,11 +53,18 @@ namespace SimuUtils
 				} 
 				if (to_script == null) {
 					to_script = to.transform.parent.GetComponent<EscalatorController> ();
-				} 
+				}
+//				if (to_script == null) {
+//					to_script = to.transform.parent.GetComponent<StairController> ();
+//				}
 
+				/*
+				 * 更换父对象的代码
+				 */ 
 				// 更改game_obj的父对象
 				game_obj.transform.parent = to.transform.parent;
 				to_script.add_person (game_obj);
+				game_obj.layer = to_script.myLayer;
 
 				// 改变位置
 				other.transform.position = to.transform.position;

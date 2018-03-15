@@ -14,7 +14,7 @@ namespace SimuUtils
 		// Use this for initialization
 		ChildObjects father_containers;
 
-		public void Start () {
+		public override void Start () {
 //			var daddy = transform.parent;
 //			if (!daddy) print("Object has no parent");
 //			var script = daddy.GetComponent<BackgroundController>();

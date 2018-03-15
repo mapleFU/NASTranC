@@ -11,7 +11,7 @@ namespace SimuUtils {
 	{
 		public GameObject parentObject;		// 父对象，可手动设置
 
-		public void Start() {
+		virtual public void Start() {
 			var script = get_parent_script ();
 			gameObject.layer = script.myLayer;
 		}

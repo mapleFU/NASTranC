@@ -13,7 +13,7 @@ public class StairExitReader : BaseReader
 
 	const string LINE = "StairExit";
 	public override void parse() {
-
+		args = new int[3];
 		line = parse_point_pairs ();
 		for (int i = 0; i < 3; ++i) {
 			args [i] = parse_line_to_int ();
