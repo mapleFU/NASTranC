@@ -12,7 +12,7 @@ namespace SimuUtils
 {
 	using Force = UnityEngine.Vector2;
 
-	public class HumanController : MonoBehaviour {
+	public class HumanController : BaseChildObject {
 //		static private ArrayList humans = new ArrayList ();
 		static private System.Random rnd = new System.Random ();
 
@@ -106,6 +106,8 @@ namespace SimuUtils
 		public void change_destine()
 		{
 			init_destine ();
+			dest.GetComponent<DestController> ();
+
 		}
 
 		// Use this for initialization
@@ -138,6 +140,9 @@ namespace SimuUtils
 			dest = min_dst;
 		}
 
+		/*
+		 * 对人的半径进行初始化
+		 */ 
 		private void init_radius()
 		{
 
@@ -150,6 +155,9 @@ namespace SimuUtils
 			transform.localScale = current_scale;
 		}
 
+		/*
+		 * 对人的速度进行初始化
+		 */ 
 		private void init_speed()
 		{
 
@@ -171,14 +179,20 @@ namespace SimuUtils
 			rb.mass = (float)weight;
 		}
 
+		/*
+		 * 变换对象的父对象、
+		 * 非我别动
+		 */ 
 		public void change_new_father_container()
 		{
-			var daddy = transform.parent;
-			if (!daddy) print("Object has no parent");
-			var script = daddy.GetComponent<BackgroundController>();
+//			var daddy = transform.parent;
+//			if (!daddy) print("Object has no parent");
+//			var script = daddy.GetComponent<BackgroundController>();
+			var script = get_parent_script();
 			if (!script) print("Parent has no EnemyData script");
 			father_containers = script.childObjects;
 			father_containers.humans.Add (this);
+			gameObject.layer = script.myLayer;
 		}
 
 		/*
@@ -258,8 +272,11 @@ namespace SimuUtils
 		private Force count_b2p()
 		{
 			Force f = new Force (0, 0);
+
+
 			foreach (BlockController controller in father_containers.blocks) {
 				double current_distance = controller.get_distance_to_human (this) - this.radius;
+			
 				if (current_distance >= 2)
 					continue;
 				Vector2 closest_point = controller.get_closest_point (this);

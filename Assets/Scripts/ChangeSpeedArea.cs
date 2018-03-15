@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using SimuUtils;
 /*
  * 需要更改速度常数，变换速度
  * 用在电梯 闸机等区域
  */ 
-public class ChangeSpeedArea : MonoBehaviour
+public class ChangeSpeedArea :  BaseChildObject
 {
 	// 速度常数，在其中的物体速度乘以它
 	public float speed_expr;

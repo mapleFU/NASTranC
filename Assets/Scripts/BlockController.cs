@@ -11,21 +11,25 @@ using UnityEngine;
 
 namespace SimuUtils
 {
-	public class BlockController : MonoBehaviour {
+	public class BlockController : BaseChildObject {
 		public static List<BlockController> blocks = new List<BlockController>();
 		private Bounds bounds;
 		ChildObjects father_containers;
-//		private Rigidbody2D valid_rb;
+
 
 		// Use this for initialization
 		void Start () {
 			
-			var daddy = transform.parent;
-			if (!daddy) print("Object has no parent");
-			var script = daddy.GetComponent<BackgroundController>();
-			if (!script) print("Parent has no EnemyData script");
+//			var daddy = transform.parent;
+//			if (!daddy) print("Object has no parent");
+//			var script = daddy.GetComponent<BackgroundController>();
+//			if (!script) print("Parent has no EnemyData script");
+
+			// 获得父对象的脚本
+			var script = get_parent_script ();
 			father_containers = script.childObjects;
 			father_containers.blocks.Add (this);
+			gameObject.layer = script.myLayer;
 
 			HelperScript.change_z (this);
 

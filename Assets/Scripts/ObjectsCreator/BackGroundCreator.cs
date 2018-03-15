@@ -18,4 +18,9 @@ public class BackGroundCreator: BaseCreator {
 		self_layer = layer_num;
 	}
 
+	public override void create ()
+	{
+		throw new System.NotImplementedException ();
+	}
+
 }

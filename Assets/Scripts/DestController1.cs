@@ -10,12 +10,14 @@ namespace SimuUtils
 		ChildObjects father_containers;
 
 		void Start () {
-			var daddy = transform.parent;
-			if (!daddy) print("Object has no parent");
-			var script = daddy.GetComponent<BackgroundController>();
+//			var daddy = transform.parent;
+//			if (!daddy) print("Object has no parent");
+//			var script = daddy.GetComponent<BackgroundController>();
+			var script = 
 			if (!script) print("Parent has no EnemyData script");
 			father_containers = script.childObjects;
 			father_containers.dests.Add (this);
+			gameObject.layer = script.myLayer;
 
 			Debug.Log ("Add a Dest.");
 		}

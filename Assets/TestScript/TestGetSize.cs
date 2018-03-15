@@ -55,4 +55,11 @@ public class TestGetSize : MonoBehaviour
 	void sorting_layer() {
 		// https://docs.unity3d.com/Manual/Layers.html
 	}
+
+	void change_scale() {
+		// https://answers.unity.com/questions/44641/how-to-scale-a-parent-without-scaling-children.html
+		// https://stackoverflow.com/questions/22060614/getting-width-of-2d-object-in-unity-3d
+		// https://stackoverflow.com/questions/22060614/getting-width-of-2d-object-in-unity-3d
+		// 现在先改变父类大小再动儿砸
+	}
 }

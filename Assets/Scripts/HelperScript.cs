@@ -21,5 +21,7 @@ namespace SimuUtils
 //			script.transform.position = curpos;
 		}
 	}
+
+
 }
 

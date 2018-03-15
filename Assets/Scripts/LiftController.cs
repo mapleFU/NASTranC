@@ -63,6 +63,7 @@ namespace SimuUtils
 				script.change_destine ();
 
 				HelperScript.change_z (script);
+
 			}
 		}
 			

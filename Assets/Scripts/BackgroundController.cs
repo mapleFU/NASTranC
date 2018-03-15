@@ -12,6 +12,8 @@ using System;
 using System.Text;
 using UnityEngine;
 
+using System.Threading;
+
 
 using Ceil = UnityEngine.Vector2;
 
@@ -33,16 +35,19 @@ namespace SimuUtils {
 
 	public class BackgroundController : MonoBehaviour {
 		const int GRID_SIZE = 1;		// 元胞点的大小
+
 		// 装有所有的子对象
 		public ChildObjects childObjects;
 
+		public int myLayer;
 		private int height;
 		private int width;
-		private GameObject ur_border; 	// 边境对象
-		private GameObject ul_border;
-		private GameObject dr_border;
-		private GameObject dl_border;
 
+		// from 0 to start
+		public static int layer_num = 0;
+		/*
+		 * 势能场相关的力
+		 */
 		// 格子中每个点的大小
 		// 在初始化的时候设置
 		public float grid_size;
@@ -53,7 +58,12 @@ namespace SimuUtils {
 			}
 		}
 
-		const string MAL_PATH = "/Users/fuasahi/Desktop/CreateAPF2.m";
+
+//		public const string MAL_PATH = "/Users/fuasahi/Desktop/CreateAPF2.m";
+
+		/*
+		 * 坐标转化
+		 */ 
 		static Ceil V2_TO_CEIL(Vector2 position)
 		{
 			return new Vector2 ((float)Math.Truncate(position.x), (float)Math.Truncate(position.y));
@@ -88,64 +98,45 @@ namespace SimuUtils {
 			// 生成基本的势能场(格点矩阵)，来根据势能场判断人物的选点
 //			initialize_potenial_energy ();
 //			Debug.Log("X and Y is " + height + " and " + width);
+			myLayer = gameObject.layer = layer_num;
+			Interlocked.Increment (ref layer_num);
 		}
 
 		// 初始化势能
 		void initialize_potenial_energy()
 		{
-			// initial map
-			GameObject[] borders = GameObject.FindGameObjectsWithTag ("Border");
-			// TODO: fix this
+//			// initial map
+//			GameObject[] borders = GameObject.FindGameObjectsWithTag ("Border");
+//			// TODO: fix this
+//
+//			foreach (GameObject bdr in borders)
+//			{
+//				if (bdr.transform.position.x > 0) {
+//					if (bdr.transform.position.y > 0) {
+//						ur_border = bdr;
+//					} else {
+//						dr_border = bdr;
+//					}
+//				} else {
+//					if (bdr.transform.position.y > 0) {
+//						ul_border = bdr;
+//					} else {
+//						dl_border = bdr;
+//					}
+//				}
+//			}
+//			int width_all = (int)Math.Ceiling(ur_border.transform.position.x / GRID_SIZE) + (int)Math.Ceiling(-ul_border.transform.position.x / GRID_SIZE);
+//			int height_all = (int)Math.Ceiling(ul_border.transform.position.y / GRID_SIZE) + (int)Math.Ceiling(-dl_border.transform.position.y / GRID_SIZE);
+//			width = width_all;
+//			height = height_all;
 
-			foreach (GameObject bdr in borders)
-			{
-				if (bdr.transform.position.x > 0) {
-					if (bdr.transform.position.y > 0) {
-						ur_border = bdr;
-					} else {
-						dr_border = bdr;
-					}
-				} else {
-					if (bdr.transform.position.y > 0) {
-						ul_border = bdr;
-					} else {
-						dl_border = bdr;
-					}
-				}
-			}
-//			Debug.Log ("XR: "  + (int)Math.Ceiling(ur_border.transform.position.x / GRID_SIZE) + " XL: "+ (int)Math.Ceiling(-ul_border.transform.position.x / GRID_SIZE));
-//			Debug.Log((int)Math.Ceiling(ul_border.transform.position.y / GRID_SIZE) + " SPLIT "+ (int)Math.Ceiling(-dl_border.transform.position.y / GRID_SIZE));
-			int width_all = (int)Math.Ceiling(ur_border.transform.position.x / GRID_SIZE) + (int)Math.Ceiling(-ul_border.transform.position.x / GRID_SIZE);
-			int height_all = (int)Math.Ceiling(ul_border.transform.position.y / GRID_SIZE) + (int)Math.Ceiling(-dl_border.transform.position.y / GRID_SIZE);
-			width = width_all;
-			height = height_all;
-//			SpriteRenderer render = GetComponent<SpriteRenderer> ();
-//			width = (int)render.bounds.size.x + 1;
-//			height = (int)render.bounds.size.y + 1;
-//			Debug.Log("width= " + width + ", height= " + height);
+			SpriteRenderer render = GetComponent<SpriteRenderer> ();
+			width = (int)Math.Ceiling(render.bounds.size.x);
+			height = (int)Math.Ceiling(render.bounds.size.y);
+			Debug.Log("width= " + width + ", height= " + height);
 			map = new int[width, height];
 		}
-
-//		void call_matlab () {
-//			// Create the MATLAB instance 
-//			MLApp.MLApp matlab = new MLApp.MLApp(); 
-//
-//			// Change to the directory where the function is located 
-//			matlab.Execute(@"cd c:\temp\example"); 
-//
-//			// Define the output 
-//			object result = null; 
-//
-//			// Call the MATLAB function myfunc
-//			matlab.Feval("myfunc", 2, out result, 3.14, 42.0, "world"); 
-//
-//			// Display result 
-//			object[] res = result as object[]; 
-//
-//			Console.WriteLine(res[0]); 
-//			Console.WriteLine(res[1]); 
-//			Console.ReadLine(); 
-//		}
+			
 	}
 
 }

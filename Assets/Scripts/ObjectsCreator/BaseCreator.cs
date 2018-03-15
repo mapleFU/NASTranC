@@ -1,19 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BaseCreator : MonoBehaviour
+public abstract class BaseCreator
 {
+	protected Transform prefab;
+	public BaseCreator(Transform prefab) {
+		this.prefab = prefab;
+	}
 
-	// Use this for initialization
-	void Start ()
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-	
-	}
+	public abstract void create ();
 }
 

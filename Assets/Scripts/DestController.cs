@@ -9,18 +9,20 @@ using UnityEngine;
 
 namespace SimuUtils
 {
-	public class DestController : MonoBehaviour {
+	public class DestController : BaseChildObject {
 
 		// Use this for initialization
 		ChildObjects father_containers;
 
 		public void Start () {
-			var daddy = transform.parent;
-			if (!daddy) print("Object has no parent");
-			var script = daddy.GetComponent<BackgroundController>();
-			if (!script) print("Parent has no EnemyData script");
+//			var daddy = transform.parent;
+//			if (!daddy) print("Object has no parent");
+//			var script = daddy.GetComponent<BackgroundController>();
+//			if (!script) print("Parent has no EnemyData script");
+			var script = get_parent_script();
 			father_containers = script.childObjects;
 			father_containers.dests.Add (this);
+			gameObject.layer = script.myLayer;
 
 			HelperScript.change_z (this);
 
