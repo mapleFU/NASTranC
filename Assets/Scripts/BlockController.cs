@@ -25,6 +25,7 @@ namespace SimuUtils
 //			var script = daddy.GetComponent<BackgroundController>();
 //			if (!script) print("Parent has no EnemyData script");
 
+			Debug.Log ("BlockController ready to get parent script.");
 			// 获得父对象的脚本
 			var script = get_parent_script ();
 			father_containers = script.childObjects;

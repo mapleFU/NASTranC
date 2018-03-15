@@ -13,7 +13,9 @@ namespace SimuUtils
 	using Force = UnityEngine.Vector2;
 
 	public class HumanController : BaseChildObject {
-//		static private ArrayList humans = new ArrayList ();
+		// 每一个格子格点的大小，在一个项目中是固定的
+		public static float grid_size;
+
 		static private System.Random rnd = new System.Random ();
 
 		private ChildObjects father_containers;
@@ -40,7 +42,7 @@ namespace SimuUtils
 		// 常量-平均值-分布 对应的常量调整
 
 		// 半径量
-		private const double unity_radius_scale = 0.3f;		// 缩小倍率
+		private const double unity_radius_scale = 0.05f;		// 缩小倍率
 		private const double reality_radius_normal = 0.45f;	// 半径平均是多少m
 		private const double reality_radius_upper = 0.51f;	// 设计的上限
 		private const double reality_radius_lower = 0.39f;	// 设计的下限
@@ -150,8 +152,8 @@ namespace SimuUtils
 //			Debug.Log ("radius: " + radius);
 			// init scale with actual value
 			Vector3 current_scale = transform.localScale;
-			current_scale.x = (float)radius;
-			current_scale.y = (float)radius;
+			current_scale.x = (float)(radius * unity_radius_scale);
+			current_scale.y = (float)(radius * unity_radius_scale);
 			transform.localScale = current_scale;
 		}
 
@@ -198,7 +200,7 @@ namespace SimuUtils
 		/*
 		 * 脚本初始化  
 		 */ 
-		void Start () {
+		public override void Start () {
 			change_new_father_container ();
 
 			rb = GetComponent<Rigidbody2D> ();
@@ -252,7 +254,10 @@ namespace SimuUtils
 		private Force aux_mentally_p2p()
 		{
 			Force mental_force = new Force(0, 0);
+			// DEBUG
+//			int humans = 0;
 			foreach (HumanController player in father_containers.humans) {
+//				++humans;
 				if (player == this || player.gameObject.activeSelf == false)
 					continue;
 
@@ -264,17 +269,20 @@ namespace SimuUtils
 				mental_force += (float)(P2P_CONSTEXPR * Math.Exp ((-Vector3.Distance(this.transform.position, player.transform.position) - this.radius - player.radius) / MAX_MENTALLY_DISTANCE))
 					* get_direction_to_dest ();
 			}
-
+//			Debug.Log (humans + " human in this layer.");
 			return mental_force;
 		}
 
 		// Problem: 线性障碍物计算
+		// DEBUG
+		bool used = false;
 		private Force count_b2p()
 		{
 			Force f = new Force (0, 0);
 
-
+			int blocks = 0;
 			foreach (BlockController controller in father_containers.blocks) {
+				++blocks;
 				double current_distance = controller.get_distance_to_human (this) - this.radius;
 			
 				if (current_distance >= 2)
@@ -300,6 +308,12 @@ namespace SimuUtils
 					f += (normal + tangent);
 				}
 
+			}
+
+			// DEBUG
+			if (!used) {
+				Debug.Log ("There are " + blocks + "blocks.");
+//				used = true;
 			}
 
 			return f;

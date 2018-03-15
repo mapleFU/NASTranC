@@ -19,16 +19,19 @@ namespace SimuUtils {
 		 * 获得父对象的脚本
 		 */ 
 		public BackgroundController get_parent_script() {
-			BackgroundController bkg = parentObject.GetComponent<BackgroundController> ();
-			if (bkg == null) {
-				Debug.Log ("parentObject in " + this.ToString() + " is null!");
+			
+			BackgroundController bkg;
+			if (parentObject != null) {
+				bkg = parentObject.GetComponent<BackgroundController> ();
+				Debug.Log ("parentObject in " + this.ToString () + " is null!");
+			} else {
 				parentObject = this.transform.parent.gameObject;
 				bkg = parentObject.GetComponent<BackgroundController> ();
-				gameObject.layer = bkg.myLayer;
 				if (bkg == null) {
 					Debug.LogError ("parentObject in " + this.ToString() + "'s father is still null!");
 				}
-			} 
+			}
+			gameObject.layer = bkg.myLayer;
 			return bkg;
 		}
 

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 using UnityEngine;
-
+using System.IO;
 using System.Threading;
 
 
@@ -20,15 +20,30 @@ using Ceil = UnityEngine.Vector2;
 namespace SimuUtils {
 
 	// 用于存放子对象，处理子元素的类
+	// TODO: 是否考虑加入事件
 	public class ChildObjects 
 	{
 		// 对应的background, 需要对象来赋值产生
 		public GameObject backGround;
 
-		public ArrayList dests = new ArrayList();
-		public ArrayList blocks = new ArrayList();
-		public ArrayList humans = new ArrayList();
-		public ArrayList lifts = new ArrayList ();
+		private ArrayList _dests = new ArrayList();
+		private ArrayList _blocks = new ArrayList();
+		private ArrayList _humans = new ArrayList();
+		private ArrayList _lifts = new ArrayList ();
+
+		public ArrayList dests {
+			get { return _dests;}
+			set {  _dests = value;}
+		}
+		public ArrayList blocks {
+			get { return _blocks;}
+		}
+		public ArrayList humans {
+			get { return _humans;}
+		}
+		public ArrayList lifts {
+			get { return _lifts;}
+		}
 
 
 	}
@@ -43,6 +58,7 @@ namespace SimuUtils {
 		private int height;
 		private int width;
 
+
 		// from 0 to start
 		public static int layer_num = 0;
 		/*
@@ -50,9 +66,11 @@ namespace SimuUtils {
 		 */
 		// 格子中每个点的大小
 		// 在初始化的时候设置
+		public string FILE_NAME;
 		public float grid_size;
-		private int[,] map;
-		public int[,] Map {
+		public int x, y;	// x y坐标点的数目
+		private float[,] map;
+		public float[,] Map {
 			get {
 				return map;
 			}
@@ -134,9 +152,29 @@ namespace SimuUtils {
 			width = (int)Math.Ceiling(render.bounds.size.x);
 			height = (int)Math.Ceiling(render.bounds.size.y);
 			Debug.Log("width= " + width + ", height= " + height);
-			map = new int[width, height];
+			// the map may be bigger than you wish to be
+			map = new float[width, height];
+			// don't init it now.
+//			init_map ();
 		}
-			
+
+		/*
+		 *  初始化势能场
+		 * 	从每个APF中读取数据
+		 */ 
+		void init_map() {
+			using (FileStream fs = File.OpenRead(FILE_NAME)) {
+				BinaryReader br = new BinaryReader (fs);
+
+				for (int i = 0; i < x; ++i) {
+					for (int j = 0; j < y; ++j) {
+						// read from it
+						map [i, j] = br.ReadSingle ();
+					}
+				}
+			}
+
+		}
 	}
 
 }

@@ -12,7 +12,8 @@ public class MetroController : BaseChildObject
 	private Bounds bound;
 	private float height, width;
 
-	public void Start() {
+	public override void Start() {
+		base.Start ();
 		p_script = get_parent_script ();
 		parentTransform = p_script.transform;
 		bound = get_box_render ();
