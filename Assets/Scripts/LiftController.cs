@@ -60,6 +60,7 @@ namespace SimuUtils
 
 				/*
 				 * 更换父对象的代码
+				 * 考虑父对象使用自己的生成算法
 				 */ 
 				// 更改game_obj的父对象
 				game_obj.transform.parent = to.transform.parent;
