@@ -55,9 +55,11 @@ namespace SimuUtils {
 		public ChildObjects childObjects;
 
 		public int myLayer;
-		private int height;
-		private int width;
-
+		private float height;
+		private float width;
+		// 双亲的长度
+		private float parent_x;		
+		private float parent_y;
 
 		// from 0 to start
 		public static int layer_num = 0;
@@ -149,8 +151,8 @@ namespace SimuUtils {
 //			height = height_all;
 
 			SpriteRenderer render = GetComponent<SpriteRenderer> ();
-			width = (int)Math.Ceiling(render.bounds.size.x);
-			height = (int)Math.Ceiling(render.bounds.size.y);
+			width = Math.Ceiling(render.bounds.size.x);
+			height = Math.Ceiling(render.bounds.size.y);
 			Debug.Log("width= " + width + ", height= " + height);
 			// the map may be bigger than you wish to be
 			map = new float[width, height];
@@ -174,6 +176,12 @@ namespace SimuUtils {
 				}
 			}
 
+		}
+
+		private Vector2 mapv2pos(Vector2 pos) {
+			int x = (int)(pos.x / grid_size);
+			int y = (int)(pos.y / grid_size);
+			return 
 		}
 	}
 
