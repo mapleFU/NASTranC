@@ -51,4 +51,8 @@ public class TestGetSize : MonoBehaviour
 
 
 	}
+
+	void sorting_layer() {
+		// https://docs.unity3d.com/Manual/Layers.html
+	}
 }
