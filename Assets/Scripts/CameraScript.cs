@@ -83,7 +83,7 @@ public class CameraScript : MonoBehaviour {
 	 */ 
 
 	public void onBind(HumanController humanController) {
-		Debug.Log ("Bind " + humanController.ToString ());
+//		Debug.Log ("Bind " + humanController.ToString ());
 		watched_player = humanController.gameObject.transform;
 		// using it to bind and change layer.
 		cam.gameObject.layer = watched_player.gameObject.layer;

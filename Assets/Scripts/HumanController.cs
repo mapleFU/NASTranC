@@ -140,7 +140,7 @@ namespace SimuUtils
 
 			// init dest
 			dest = min_dst;
-			Debug.Log ("Now " + ToString() +  " dest is " + dest);
+//			Debug.Log ("Now " + ToString() +  " dest is " + dest);
 		}
 
 		/*
@@ -236,7 +236,7 @@ namespace SimuUtils
 			if (Input.GetButtonDown("Fire1")) {
 				// TODO: fill in
 				CameraScript.Instance.onBind(this);
-				Debug.Log ("Bind.");
+//				Debug.Log ("Bind.");
 			}
 		}
 

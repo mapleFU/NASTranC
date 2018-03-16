@@ -70,8 +70,8 @@ namespace SimuUtils
 				game_obj.transform.parent = to.transform.parent;
 				script.gameObject.transform.parent = to.transform.parent;
 				to_script.add_person (game_obj);
-				Debug.Log (game_obj + " change father to " + to_script.gameObject + 
-					" which layer num is " + to_script.gameObject.layer);
+//				Debug.Log (game_obj + " change father to " + to_script.gameObject + 
+//					" which layer num is " + to_script.gameObject.layer);
 
 				// 改变位置
 				other.transform.position = to.transform.position;
@@ -90,6 +90,8 @@ namespace SimuUtils
 					CameraScript.Instance.relayer_child_camera ();
 					Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
 				}
+
+
 				script.transform.localScale = localscale;
 				script.transform.rotation = rotate;
 				HelperScript.change_z (script);
