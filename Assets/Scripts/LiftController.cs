@@ -64,6 +64,9 @@ namespace SimuUtils
 				 */ 
 				// 更改game_obj的父对象
 				// TODO: 搞清楚是不是要多重改变
+				var rotate = other.transform.localRotation;
+				var localscale = other.transform.localScale;
+
 				game_obj.transform.parent = to.transform.parent;
 				script.gameObject.transform.parent = to.transform.parent;
 				to_script.add_person (game_obj);
@@ -72,7 +75,6 @@ namespace SimuUtils
 
 				// 改变位置
 				other.transform.position = to.transform.position;
-
 				// 更换目标
 
 				script.change_new_father_container (to_script);
@@ -88,7 +90,8 @@ namespace SimuUtils
 					CameraScript.Instance.relayer_child_camera ();
 					Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
 				}
-
+				script.transform.localScale = localscale;
+				script.transform.rotation = rotate;
 				HelperScript.change_z (script);
 
 			}
