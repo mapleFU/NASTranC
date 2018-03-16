@@ -124,6 +124,7 @@ namespace SimuUtils
 			GameObject min_dst = null;
 			float min_length = float.MaxValue;
 //			this.transform.gameObject
+			// need to change this
 			foreach (MonoBehaviour behaviour in father_containers.dests) {
 
 				if (behaviour == used_lift) 
@@ -139,6 +140,7 @@ namespace SimuUtils
 
 			// init dest
 			dest = min_dst;
+			Debug.Log ("Now " + ToString() +  " dest is " + dest);
 		}
 
 		/*
@@ -184,23 +186,20 @@ namespace SimuUtils
 		 * 变换对象的父对象、
 		 * 非我别动
 		 */ 
-		public void change_new_father_container()
+		public void change_new_father_container(MonoBehaviour to_script)
 		{
-//			var daddy = transform.parent;
-//			if (!daddy) print("Object has no parent");
-//			var script = daddy.GetComponent<BackgroundController>();
-			var script = get_parent_script();
-			if (!script) print("Parent has no EnemyData script");
-			father_containers = script.childObjects;
-			father_containers.humans.Add (this);
-			gameObject.layer = script.myLayer;
+			BackgroundController new_father_script = to_script as BackgroundController;
+			this.transform.parent = new_father_script.transform;
+			father_containers = new_father_script.childObjects;
 		}
 
 		/*
 		 * 脚本初始化  
 		 */ 
 		public override void Start () {
-			change_new_father_container ();
+			// to myself first.
+			var daddy = get_parent_script();
+			father_containers = daddy.childObjects;
 
 			rb = GetComponent<Rigidbody2D> ();
 			// 添加自己的对象

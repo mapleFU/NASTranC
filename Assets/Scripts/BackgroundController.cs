@@ -23,6 +23,21 @@ namespace SimuUtils {
 	// TODO: 是否考虑加入事件
 	public class ChildObjects 
 	{
+		private static int n = 0;
+		private int num;
+		public override string ToString ()
+		{
+			return "ChildObjects " + n;
+		}
+
+		private static readonly object syncLock2 = new object();
+		public ChildObjects() {
+			lock (syncLock2) {
+				num = n;
+				++n;
+			}
+		}
+
 		// 对应的background, 需要对象来赋值产生
 		public GameObject backGround;
 
