@@ -37,7 +37,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1817764441640480}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.49, y: -0.15, z: -0.41}
+  m_LocalPosition: {x: 0, y: 0, z: -0.41}
   m_LocalScale: {x: 1, y: 1, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -92,7 +92,7 @@ MonoBehaviour:
   parentObject: {fileID: 0}
   "\u884C\u4EBA\u901F\u5EA6\u671F\u671Bv1\xDF": 0
   "\u884C\u4EBA\u901F\u5EA6\u53CD\u5DEE\u03C31": 0
-  rb: {fileID: 0}
+  rb: {fileID: 50139401264165594}
 --- !u!212 &212965742962398882
 SpriteRenderer:
   m_ObjectHideFlags: 1

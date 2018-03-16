@@ -7,7 +7,7 @@ public class PositionGetter : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		Debug.Log (gameObject.transform.position);
+//		Debug.Log (gameObject.transform.position);
 	}
 
 }

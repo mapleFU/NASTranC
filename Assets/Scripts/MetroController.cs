@@ -2,6 +2,7 @@
 using System.Collections;
 using SimuUtils;
 
+// TODO: finish this
 public class MetroController : BaseChildObject
 {
 	// 人类的prefab, 用于创建

@@ -25,6 +25,10 @@ namespace SimuUtils {
 				bkg = parentObject.GetComponent<BackgroundController> ();
 				Debug.Log ("parentObject in " + this.ToString () + " is null!");
 			} else {
+				var parentTrans = this.transform.parent;
+				if (parentTrans == null) {
+					Debug.LogError ("A " + this.GetType() + " doesn't have a parent.");
+				}
 				parentObject = this.transform.parent.gameObject;
 				bkg = parentObject.GetComponent<BackgroundController> ();
 				if (bkg == null) {

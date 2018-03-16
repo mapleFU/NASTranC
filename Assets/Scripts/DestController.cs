@@ -37,8 +37,11 @@ namespace SimuUtils
 		{
 			if (other.gameObject.CompareTag ("Human"))
 			{
+				if (CameraScript.Instance.watched_player == other.transform) {
+					CameraScript.Instance.deBind ();
+				}
 				other.gameObject.SetActive (false);
-				Debug.Log ("Human pass!");
+				Debug.Log ("Human pass! in Layer" + other.gameObject.layer);
 			}
 		}
 

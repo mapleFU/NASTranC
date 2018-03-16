@@ -66,10 +66,10 @@ namespace SimuUtils {
 		/*
 		 * 势能场相关的力
 		 */
-		// 格子中每个点的大小
+
 		// 在初始化的时候设置
-		public string FILE_NAME;
-		public float grid_size;
+		public string FILE_NAME; // 本层的势能场所在的文件名称
+		public float grid_size; // 格子中每个点的大小
 		public int x, y;	// x y坐标点的数目
 		private float[,] map;
 		public float[,] Map {
@@ -114,12 +114,13 @@ namespace SimuUtils {
 		}
 
 		// Use this for initialization
-		void Start () {
+		public virtual void Start () {
 			// 生成基本的势能场(格点矩阵)，来根据势能场判断人物的选点
 //			initialize_potenial_energy ();
 //			Debug.Log("X and Y is " + height + " and " + width);
 			myLayer = gameObject.layer = layer_num;
 			Interlocked.Increment (ref layer_num);
+			Debug.Log ("BKG controller start.");
 		}
 
 		// 初始化势能
@@ -151,11 +152,11 @@ namespace SimuUtils {
 //			height = height_all;
 
 			SpriteRenderer render = GetComponent<SpriteRenderer> ();
-			width = Math.Ceiling(render.bounds.size.x);
-			height = Math.Ceiling(render.bounds.size.y);
+			width = render.bounds.size.x;
+			height = render.bounds.size.y;
 			Debug.Log("width= " + width + ", height= " + height);
 			// the map may be bigger than you wish to be
-			map = new float[width, height];
+			map = new float[(int)width, (int)height];
 			// don't init it now.
 //			init_map ();
 		}
@@ -178,11 +179,22 @@ namespace SimuUtils {
 
 		}
 
+		/*
+		 * 地图坐标转化为整数坐标
+		 */ 
 		private Vector2 mapv2pos(Vector2 pos) {
-			int x = (int)(pos.x / grid_size);
-			int y = (int)(pos.y / grid_size);
-			return 
+			float gridx = (( width / 2 + pos.x) / grid_size);
+			float gridy = (( height / 2 + pos.y) / grid_size);;
+			return new Vector2 (gridx, gridy);
 		}
+
+//		/*
+//		 * 以上函数的逆向转化
+//		 * 想了想好像不怎么要用
+//		 */ 
+//		private Vector2 pos2map(Vector2 pos) {
+//			
+//		}
 	}
 
 }

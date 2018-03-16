@@ -75,6 +75,13 @@ namespace SimuUtils
 				script.change_new_father_container ();
 				script.change_destine ();
 
+				/*
+				 *  need to change layer.
+				 */ 
+				if (CameraScript.Instance.watched_player == script.transform) {
+					CameraScript.Instance.relayer_child_camera ();
+				}
+
 				HelperScript.change_z (script);
 
 			}

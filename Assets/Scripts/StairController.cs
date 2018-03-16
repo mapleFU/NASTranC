@@ -7,6 +7,10 @@ namespace SimuUtils {
 		// 要前往的和来自的Lift
 		// 边缘有一个给定的Lift
 
-
+		public override void Start ()
+		{
+			base.Start ();
+			Debug.Log ("StairController Builded.");
+		}
 	}
 }

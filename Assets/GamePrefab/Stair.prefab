@@ -38,7 +38,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4087222188829758}
   - component: {fileID: 212642835188484658}
-  - component: {fileID: 114183677323530084}
+  - component: {fileID: 114968427180829662}
   - component: {fileID: 114619214690261278}
   m_Layer: 0
   m_Name: Stair
@@ -108,7 +108,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1138487616356014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.794604, y: 3.128673, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 4636417473321900}
@@ -270,18 +270,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &114183677323530084
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1138487616356014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e477098d6cbe45d7a116fbcbec01092, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentObject: {fileID: 0}
 --- !u!114 &114468749519393556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -343,6 +331,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentObject: {fileID: 0}
+--- !u!114 &114968427180829662
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1138487616356014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1697c72b3a2da494481ebf1cf9f7cef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myLayer: 0
+  FILE_NAME: 
+  grid_size: 0
+  x: 0
+  y: 0
 --- !u!212 &212142543117272326
 SpriteRenderer:
   m_ObjectHideFlags: 1

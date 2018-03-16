@@ -221,8 +221,8 @@ namespace SimuUtils
 
 		// count force 
 		void Update () {
-			if (!this.isActiveAndEnabled)
-				return;
+//			if (!this.isActiveAndEnabled)
+//				return;
 			
 			// update speed
 			cur_speed = rb.velocity.magnitude;
@@ -233,6 +233,12 @@ namespace SimuUtils
 
 			Force all = fhe + p2p + b2p;
 			this.rb.AddForce (all);
+
+			// 点击检测
+			if (Input.GetButtonDown("Fire1")) {
+				// TODO: fill in
+				CameraScript.Instance.onBind(this);
+			}
 		}
 
 		private Force count_fhe()
@@ -280,9 +286,9 @@ namespace SimuUtils
 		{
 			Force f = new Force (0, 0);
 
-			int blocks = 0;
+//			int blocks = 0;
 			foreach (BlockController controller in father_containers.blocks) {
-				++blocks;
+//				++blocks;
 				double current_distance = controller.get_distance_to_human (this) - this.radius;
 			
 				if (current_distance >= 2)
@@ -310,11 +316,11 @@ namespace SimuUtils
 
 			}
 
-			// DEBUG
-			if (!used) {
-				Debug.Log ("There are " + blocks + "blocks.");
-//				used = true;
-			}
+//			// DEBUG
+//			if (!used) {
+//				Debug.Log ("There are " + blocks + "blocks.");
+////				used = true;
+//			}
 
 			return f;
 		}
@@ -364,6 +370,8 @@ namespace SimuUtils
 			}
 
 		}
+
+
 	}
 
 }
