@@ -39,7 +39,6 @@ GameObject:
   - component: {fileID: 4087222188829758}
   - component: {fileID: 212642835188484658}
   - component: {fileID: 114968427180829662}
-  - component: {fileID: 114619214690261278}
   m_Layer: 0
   m_Name: Stair
   m_TagString: Untagged
@@ -282,19 +281,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentObject: {fileID: 0}
---- !u!114 &114619214690261278
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1138487616356014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e05b5f33c4a164d4ea1ef2b7984a32a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentObject: {fileID: 0}
-  speed_expr: 0
 --- !u!114 &114654054198978034
 MonoBehaviour:
   m_ObjectHideFlags: 1

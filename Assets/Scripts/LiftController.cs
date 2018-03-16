@@ -65,7 +65,9 @@ namespace SimuUtils
 				// 更改game_obj的父对象
 				game_obj.transform.parent = to.transform.parent;
 				to_script.add_person (game_obj);
-				game_obj.layer = to_script.myLayer;
+
+				Debug.Log (game_obj + " change father to " + to_script.gameObject + 
+					" which layer num is " + to_script.gameObject.layer);
 
 				// 改变位置
 				other.transform.position = to.transform.position;
@@ -75,11 +77,15 @@ namespace SimuUtils
 				script.change_new_father_container ();
 				script.change_destine ();
 
+
+				game_obj.layer = to_script.myLayer;
 				/*
 				 *  need to change layer.
 				 */ 
+				// change the child and change camera
 				if (CameraScript.Instance.watched_player == script.transform) {
 					CameraScript.Instance.relayer_child_camera ();
+					Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
 				}
 
 				HelperScript.change_z (script);

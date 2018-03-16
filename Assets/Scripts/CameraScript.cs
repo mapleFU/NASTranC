@@ -26,9 +26,6 @@ public class CameraScript : MonoBehaviour {
 	public float height = -10f;
 	public float distance = 5f;
 
-	private Vector3 offsetX;
-	private Vector3 offsetY;
-
 	void Awake() {
 		Instance = this;
 	}
@@ -36,28 +33,60 @@ public class CameraScript : MonoBehaviour {
 	void Start () {
 		cam = this.gameObject.GetComponent<Camera> ();
 
-		offsetX = new Vector3 (0, height, distance);
-		offsetY = new Vector3 (0, 0, distance);
+		if (watched_player) {
+			onBind (watched_player.GetComponent<HumanController> ());
+		}
 	}
+
+	[SerializeField]
+	private float m_Speed = 10f; // 控制镜头跟踪时的速度，用于调整镜头额平滑移动，如果速度过大，极限情况下直接把目标位置赋给镜头，那么对于闪现一类的角色瞬移效果，将会带来不利的视觉影像
+
+	public float dist = 5.0f;//摄像机到投影屏幕的距离，即Z轴距离
+	public float h = 5.0f;//摄像机到目标物体的高度
+	public float heightDamping = 2.0f;//摄像机每次抬高的高度
+	public float rotationDamping = 3.0f;//摄像机每次旋转的角度
 
 	void LateUpdate()
 	{
-		if (watched_player == null)
+
+		//如果目标物体为空，则不进行任何处理
+		if (!watched_player)
 			return;
-		offsetX = Quaternion.AngleAxis (Input.GetAxis("Mouse X") * turnSpeed, Vector3.up) * offsetX;
-		offsetY = Quaternion.AngleAxis (Input.GetAxis("Mouse Y") * turnSpeed, Vector3.right) * offsetY;
-		transform.position = watched_player.position - offsetX - offsetY;
-		transform.LookAt(watched_player.position);
+
+		//计算摄像机需要旋转的角度和抬高的位置
+		float wantedRotationAngle = watched_player.transform.eulerAngles.y;
+		float wantedHeight = watched_player.transform.position.y + h;
+
+		float currentRotationAngle = transform.eulerAngles.y;
+		float currentHeight = transform.position.y;
+
+		//缓慢调整旋转角度
+		currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, rotationDamping * Time.deltaTime);
+
+		//缓慢调整摄像机高度
+		currentHeight = Mathf.Lerp(currentHeight, wantedHeight, heightDamping * Time.deltaTime);
+
+		//将旋转矢量转换成旋转值
+		Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
+
+		//放置摄像机在目标物体后面
+		transform.position = watched_player.transform.position;
+		transform.position -= currentRotation * Vector3.forward * dist;
+
+		//放置摄像机的高度
+		//transform.position = new Vector3(transform.position.x,currentHeight,transform.position.z);
 	}
 
 	/*
 	 * 绑定在一个对象或者层级更换的时候
 	 * 发布订阅模式？
 	 */ 
+
 	public void onBind(HumanController humanController) {
 		Debug.Log ("Bind " + humanController.ToString ());
 		watched_player = humanController.gameObject.transform;
 		// using it to bind and change layer.
+		cam.gameObject.layer = watched_player.gameObject.layer;
 		relayer_child_camera();
 	}
 

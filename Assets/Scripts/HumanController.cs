@@ -123,7 +123,6 @@ namespace SimuUtils
 //			}
 			GameObject min_dst = null;
 			float min_length = float.MaxValue;
-			Debug.Log (father_containers.dests);
 //			this.transform.gameObject
 			foreach (MonoBehaviour behaviour in father_containers.dests) {
 
@@ -238,6 +237,7 @@ namespace SimuUtils
 			if (Input.GetButtonDown("Fire1")) {
 				// TODO: fill in
 				CameraScript.Instance.onBind(this);
+				Debug.Log ("Bind.");
 			}
 		}
 
