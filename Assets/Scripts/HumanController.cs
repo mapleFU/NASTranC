@@ -13,6 +13,13 @@ namespace SimuUtils
 	using Force = UnityEngine.Vector2;
 
 	public class HumanController : BaseChildObject {
+		public bool in_disaster;	// 是否在灾害中
+		public static float MAX_DISASTER_BROADCAST;	// 人物时间步中传递灾害模式的半径
+		// 进入灾害模式
+		public void to_disaster_mode () {
+			in_disaster = true;	
+		}
+
 		// 每一个格子格点的大小，在一个项目中是固定的
 		public static float grid_size;
 
@@ -57,14 +64,18 @@ namespace SimuUtils
 //		public double reality_weight_lower;
 //		public double reality_weight_upper;
 
-		// 初始化速度和期望速度 
+		// 正常情况下的 初始化速度和期望速度 
 		private const double reality_excspeed_mean = 1.26f;
 		private const double reality_excspeed_stddev = 0.36f;
-		public double 行人速度期望v1ß;
-		public double 行人速度反差σ1;
+		private const double disaster_excspeed_mean = 1.56f;
+		private const double disaster_excspeed_stddev = 0.16f;
+
+
 
 		private const double reality_inispeed_mean = 1.0f;
 		private const double reality_inispeed_stddev = 0.2f;
+		private const double disaster_inispeed_mean = 1.16f;
+		private const double disaster_inispeed_stddev = 0.2f;
 //		public double reality_inispeed_mean;
 //		public double reality_inispeed_stddev;
 
@@ -84,7 +95,16 @@ namespace SimuUtils
 
 		private double weight;			// 质量-> Rigid2d.mass
 		private double radius;			// 半径
-		private double exc_speed;	// 预期速度
+		private double _normal_exc_speed;	// 预期速度
+		private double _disaster_exc_speed;	// 灾情预期速度
+		private double exc_speed {
+			get { 
+				if (in_disaster)
+					return _disaster_exc_speed;
+				return _normal_exc_speed;
+			}
+		}
+
 		private double cur_speed;	// 现有速度
 		private Vector2 cur_vec2;	// 目前运行的向量
 
@@ -113,7 +133,7 @@ namespace SimuUtils
 		}
 
 		// Use this for initialization
-		// 初始化目的地
+		// 初始化目的地, 本算法选取的是最小的
 		private void init_destine()
 		{
 //			if (all_dests == null) {
@@ -164,7 +184,9 @@ namespace SimuUtils
 		private void init_speed()
 		{
 
-			exc_speed = RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
+			_normal_exc_speed = RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
+			_disaster_exc_speed = RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
+
 			cur_speed = RandomGussion (reality_inispeed_mean, reality_inispeed_stddev);
 			// TODO: 初始化对应速度
 			//		rb.velocity;
@@ -211,14 +233,14 @@ namespace SimuUtils
 			init_destine ();
 			init_speed ();
 
-
+			in_disaster = false;
 			Debug.Log ("Add a Human.");
 		}
 
 		// Update is called once per frame
 
 		// count force 
-		void Update () {
+		public void Update () {
 //			if (!this.isActiveAndEnabled)
 //				return;
 			
@@ -236,8 +258,9 @@ namespace SimuUtils
 			if (Input.GetButtonDown("Fire1")) {
 				// TODO: fill in
 				CameraScript.Instance.onBind(this);
-//				Debug.Log ("Bind.");
 			}
+
+
 		}
 
 		private Force count_fhe()
@@ -259,10 +282,10 @@ namespace SimuUtils
 		private Force aux_mentally_p2p()
 		{
 			Force mental_force = new Force(0, 0);
-			// DEBUG
-//			int humans = 0;
+
 			foreach (HumanController player in father_containers.humans) {
-//				++humans;
+
+				// 遍历这一层的player，如果是自己则continue
 				if (player == this || player.gameObject.activeSelf == false)
 					continue;
 

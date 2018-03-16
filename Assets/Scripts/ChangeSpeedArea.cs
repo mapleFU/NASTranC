@@ -28,15 +28,15 @@ public class ChangeSpeedArea :  BaseChildObject
 		}
 	}
 
-	void OnTriggerExit2D(Collider2D other)
-	{
-		GameObject collider_object = other.gameObject;
-		if (collider_object.CompareTag ("Human")) {
-			if (same_father (collider_object)) {
-				Rigidbody2D rigid = collider_object.GetComponent<Rigidbody2D> ();
-				rigid.velocity /= speed_expr;
-			}
-		}
-	}
+//	void OnTriggerExit2D(Collider2D other)
+//	{
+//		GameObject collider_object = other.gameObject;
+//		if (collider_object.CompareTag ("Human")) {
+//			if (same_father (collider_object)) {
+//				Rigidbody2D rigid = collider_object.GetComponent<Rigidbody2D> ();
+//				rigid.velocity /= speed_expr;
+//			}
+//		}
+//	}
 }
 

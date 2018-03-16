@@ -94,6 +94,33 @@ namespace SimuUtils {
 		}
 
 
+		// 给同层传递火情
+
+		bool has_disaster;	// 若本层拥有局部灾情
+		void LateUpdate() {
+			// TODO: 填充获得险情的场景
+
+
+			//  
+			var human_lists = childObjects.humans;
+			int size = human_lists.Count;
+			for (int i = 1; i < size; ++i) {
+				HumanController h = human_lists [i] as HumanController;
+				if (h.in_disaster) {
+					for (int j = 0; j < size; ++j) {
+						HumanController humanj = human_lists [j] as HumanController;
+						if (Vector2.Distance (h.transform.position, humanj.transform.position)
+							< HumanController.MAX_DISASTER_BROADCAST) {
+							// 应急模式
+							humanj.to_disaster_mode ();
+						}
+
+					}
+				}
+
+			}
+		}
+
 //		public const string MAL_PATH = "/Users/fuasahi/Desktop/CreateAPF2.m";
 
 		/*

@@ -29,6 +29,10 @@ namespace SimuUtils {
 				if (parentTrans == null) {
 					Debug.LogError ("A " + this.GetType() + " doesn't have a parent.");
 				}
+				// 再次递归向上的查找
+				while (parentTrans.parent != null) {
+					parentTrans = parentTrans.parent;
+				}
 				parentObject = this.transform.parent.gameObject;
 				bkg = parentObject.GetComponent<BackgroundController> ();
 				if (bkg == null) {
