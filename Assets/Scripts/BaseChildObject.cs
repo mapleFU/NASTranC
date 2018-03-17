@@ -24,7 +24,7 @@ namespace SimuUtils {
 			if (parentObject != null) {
 				// parent o is not null, then run script.
 				bkg = parentObject.GetComponent<BackgroundController> ();
-				Debug.Log ("parentObject in " + this.ToString () + " is null!");
+//				Debug.Log ("parentObject in " + this.ToString () + " is null!");
 			} else {
 				// parent is null, then write it
 				var parentTrans = this.transform.parent;
@@ -44,11 +44,14 @@ namespace SimuUtils {
 				bkg = parentObject.GetComponent<BackgroundController> ();
 				if (bkg == null) {
 					if (this.gameObject.name.Contains ("Block")) {
-						return transform.parent.parent.GetComponent<BackgroundController> ();
+						Debug.Log ("This area is runned.");
+						parentObject = transform.parent.parent.gameObject;
+						return parentObject.GetComponent<BackgroundController> ();
 					}
 					Debug.LogError ("parentObject in " + this.ToString() + "'s father is still null!"+ "(from " + parentObject + ")");
 					// TODO:fix this bug
 					var sl = GameObject.Find("SecondLayer");
+					parentObject = sl;
 					return sl.GetComponent<BackgroundController> ();
 				}
 			}

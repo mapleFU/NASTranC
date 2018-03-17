@@ -19,7 +19,7 @@ public class CrossChannelController : BaseChildObject {
 	 */ 
 	void Awake () {
 		var script = get_parent_script ();
-
+		HashSet<LiftController> equal_lists = new HashSet<LiftController> ();
 //		Debug.Log ("Create cross channel in " + script.gameObject);
 		foreach (Transform myTrans in transform) {
 			switch (myTrans.name) {
@@ -27,21 +27,29 @@ public class CrossChannelController : BaseChildObject {
 			case "Lift":
 				mid = myTrans.GetComponent<LiftController> ();
 				mid.parentObject = script.gameObject;
+				equal_lists.Add (mid);
 				break;
 			case "UpLift":
 			case "Lift (2)":
 				up = myTrans.GetComponent<LiftController> ();
 				up.parentObject = script.gameObject;
+				equal_lists.Add (mid);
 				break;
 			case "DownLift":
 			case "Lift (1)":
 				down = myTrans.GetComponent<LiftController> ();
 				down.parentObject = script.gameObject;
+				equal_lists.Add (mid);
 				break;
 			default:
 				break;
 			}
 		}
+		// 每个 cross channel 是等同的。
+		foreach (LiftController controller in equal_lists) {
+			controller.un_allowed_lifts = equal_lists;
+		}
+
 //		Debug.Log ("My mid is " + mid + " up is " + up);
 		foreach (Transform childTrans in to ) {
 			switch (childTrans.name) {
@@ -82,6 +90,8 @@ public class CrossChannelController : BaseChildObject {
 			lift1.to = goto_left.gameObject;
 			goto_left.to = lift1.gameObject;
 		} else {
+			
+//			Debug.Log ("Attach right lift.");
 			lift1.to = goto_right.gameObject;
 			goto_right.to = lift1.gameObject;
 		}

@@ -35,7 +35,7 @@ namespace SimuUtils
 		// if find "human" with tag
 		void OnTriggerEnter2D (Collider2D other)
 		{
-			Debug.Log("Human trigger.");
+//			Debug.Log("Human trigger.");
 			if (other.gameObject.CompareTag ("Human"))
 			{
 				if (this.gameObject.layer != other.gameObject.layer)

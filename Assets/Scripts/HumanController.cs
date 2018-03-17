@@ -29,7 +29,18 @@ namespace SimuUtils
 
 		private ChildObjects father_containers;
 		// 使用过的lift
-		public LiftController used_lift = null;
+//		public LiftController used_lift = null;
+		public HashSet<LiftController> used_list;
+
+		/*
+		 * 判断给出的楼梯是可以使用的
+		 */ 
+		public bool lift_available(LiftController c) {
+			// at first is null.
+			if (used_list == null)
+				return true;
+			return !used_list.Contains (c);
+		}
 
 		static public double RandomGussion(double mean, double stdDev)
 		{
@@ -130,7 +141,8 @@ namespace SimuUtils
 		public void change_destine()
 		{
 			init_destine ();
-			dest.GetComponent<DestController> ();
+			var to_dest = dest.GetComponent<DestController> ();
+			Debug.Log ("THe new dest is " + to_dest);
 		}
 			
 		// Use this for initialization
@@ -149,9 +161,11 @@ namespace SimuUtils
 			int cnt = 0;
 			foreach (MonoBehaviour behaviour in father_containers.dests) {
 				++cnt;
-				if (behaviour == used_lift) 
+//				if (behaviour == used_lift) 
+//					continue;
+				if (behaviour.GetType() == typeof(LiftController) && lift_available (behaviour as LiftController)) {
 					continue;
-
+				}
 				GameObject dst = behaviour.gameObject;
 				float value = Vector3.Distance (this.transform.position, dst.transform.position);
 				if (value < min_length) {
@@ -185,17 +199,17 @@ namespace SimuUtils
 		 */ 
 		private void init_speed()
 		{
-			Debug.Log("Start init speed");
+//			Debug.Log("Start init speed");
 			_normal_exc_speed = RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
 			_disaster_exc_speed = RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
-			Debug.Log ("Init speed expr");
+//			Debug.Log ("Init speed expr");
 
 			cur_speed = RandomGussion (reality_inispeed_mean, reality_inispeed_stddev);
-			Debug.Log ("Init cur speed.");
+//			Debug.Log ("Init cur speed.");
 			// TODO: 初始化对应速度
 			//		rb.velocity;
 			if (dest == null) {
-				Debug.Log ("Fuck you!");
+				Debug.LogError ("We dont have a dest.");
 			}
 			Vector3 dir = dest.transform.position - transform.position;
 			dir.z = 0;
@@ -228,9 +242,9 @@ namespace SimuUtils
 		 */ 
 		public override void Start () {
 			// to myself first.
-			Debug.Log("Human want's to start.");
+//			Debug.Log("Human want's to start.");
 			var daddy = get_parent_script();
-			Debug.Log ("Human's daddy :" + daddy.gameObject);
+//			Debug.Log ("Human's daddy :" + daddy.gameObject);
 			father_containers = daddy.childObjects;
 			father_containers.humans.Add (this);
 
