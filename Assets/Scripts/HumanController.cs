@@ -408,10 +408,12 @@ namespace SimuUtils
 				// 旁边都是墙，我也不知道怎么走
 				return;
 			}
-			var force_direc = new Force (maxx, maxy);
 
-			// 方向乘以常数
-			rb.AddForce (force_direc.Normalize() * potential_energy_field_constexpr);
+			var force_direc = new Force (maxx, maxy);
+			force_direc.Normalize ();
+
+			// 方向的单位矢量乘以常数
+			rb.AddForce (force_direc * potential_energy_field_constexpr);
 
 		}
 

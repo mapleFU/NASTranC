@@ -17,7 +17,7 @@ namespace SimuUtils
 	{
 		// 通向的GameObject, 不可以是null, 应该是BackGroundController控制的
 		public GameObject to;
-
+		public bool up_or_down;	// 为true则为up, 为false则为down。
 		private BackgroundController bkg_ctrl;
 
 		public override void Start()

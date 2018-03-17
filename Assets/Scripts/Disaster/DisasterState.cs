@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class NormalState : HumanState
+public class DisasterState : HumanState
 {
-	public NormalState(Transform human): base(human) {}
+	public DisasterState(Transform human): base(human) {}
 	// 获取行人的期望举动速度
 	public override float get_exc_speed () {
 		return 0;
@@ -12,6 +12,5 @@ public class NormalState : HumanState
 	public override float get_init_speed () {
 		return 0;
 	}
-
 }
 
