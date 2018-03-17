@@ -22,14 +22,20 @@ namespace SimuUtils
 
 		public override void Start()
 		{
+			
+			var daddy = get_parent_script ();	// 获得父对象
+			Debug.Log ("Intended to create lifts in bkg: " + daddy.gameObject);
 			base.Start ();
-			bkg_ctrl = this.gameObject.transform.parent.gameObject.GetComponent<BackgroundController> ();
+//			bkg_ctrl = this.gameObject.transform.parent.gameObject.GetComponent<BackgroundController> ();
+			bkg_ctrl = daddy;
 			if (!bkg_ctrl) {
 				// if background controller is null
-				Debug.Log("Lift should be a component of the background!");
+				Debug.Log ("Lift should be a component of the background!");
 				return;
+			} else {
+				Debug.Log ("Lift Controller init with aim " + to);	
 			}
-			Debug.Log ("Lift Controller init.");
+
 		}
 
 
@@ -47,17 +53,18 @@ namespace SimuUtils
 				}
 
 				// 变换主从关系
+				if (bkg_ctrl.childObjects == null ) {
+					Debug.LogError ("你麻痹childObjects 都没有");
+				} else if (bkg_ctrl.childObjects.humans == null) {
+					Debug.LogError ("我怕不是个傻子");
+				}
 				bkg_ctrl.childObjects.humans.Remove (game_obj);
 				// 获得Link对象的父脚本to_script
-				BackgroundController to_script = to.transform.parent.GetComponent<BackgroundController> ();
+				BackgroundController to_script = get_parent_script();
 				if (to_script == null) {
 					to_script = to.transform.parent.GetComponent<StairController> ();
 					Debug.Log ("Empty1");
 				} 
-				if (to_script == null) {
-					to_script = to.transform.parent.GetComponent<EscalatorController> ();
-				}
-
 
 				/*
 				 * 更换父对象的代码
@@ -80,7 +87,7 @@ namespace SimuUtils
 				script.change_destine ();
 
 
-				game_obj.layer = to_script.myLayer;
+				game_obj.layer = to_script.gameObject.layer;
 				/*
 				 *  need to change layer.
 				 */ 

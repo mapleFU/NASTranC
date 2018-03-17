@@ -146,8 +146,9 @@ namespace SimuUtils
 			float min_length = float.MaxValue;
 //			this.transform.gameObject
 			// need to change this
+			int cnt = 0;
 			foreach (MonoBehaviour behaviour in father_containers.dests) {
-
+				++cnt;
 				if (behaviour == used_lift) 
 					continue;
 
@@ -158,7 +159,7 @@ namespace SimuUtils
 					min_dst = dst;
 				}
 			}
-
+//			Debug.Log ("There are " + cnt + " dests in this layer.");
 			// init dest
 			dest = min_dst;
 //			Debug.Log ("Now " + ToString() +  " dest is " + dest);
@@ -229,24 +230,26 @@ namespace SimuUtils
 			// to myself first.
 			Debug.Log("Human want's to start.");
 			var daddy = get_parent_script();
+			Debug.Log ("Human's daddy :" + daddy.gameObject);
 			father_containers = daddy.childObjects;
+			father_containers.humans.Add (this);
 
 			rb = GetComponent<Rigidbody2D> ();
 			// 添加自己的对象
 //			humans.Add (this);
 //			HelperScript.change_z (this);
-			Debug.Log("Human begin to init");
+//			Debug.Log("Human begin to init");
 			init_radius ();
-			Debug.Log("init radius");
+//			Debug.Log("init radius");
 			init_weight ();
-			Debug.Log ("init weight");
+//			Debug.Log ("init weight");
 			init_destine ();
-			Debug.Log ("init destine");
+//			Debug.Log ("init destine");
 			init_speed ();
-			Debug.Log ("init speed.");
+//			Debug.Log ("init speed.");
 
 			in_disaster = false;
-			Debug.Log ("Add a Human.");
+		
 		}
 
 		// Update is called once per frame
@@ -315,7 +318,6 @@ namespace SimuUtils
 
 		// Problem: 线性障碍物计算
 		// DEBUG
-		bool used = false;
 		private Force count_b2p()
 		{
 			Force f = new Force (0, 0);
@@ -403,25 +405,26 @@ namespace SimuUtils
 			int y = (int)map_vec2.y;
 
 
-			int maxx=-5, maxy=-5;
-			float max_value = -6;
+			int minx=-5, miny=-5;
+			float min_value = 30000;
 			for (int i = x - 2; i <= x + 2; ++i) {
 				for (int j = y - 2; j <= y + 2; ++j) {
 					if (if_in (i, j)) {
 						// 这个点在map中
-						if (map[i, j] > max_value) {
-							maxx = i;
-							maxy = j;
+						if (map[i, j] < min_value) {
+							minx = i;
+							miny = j;
+							min_value = map [i, j];
 						}
 					}
 				}
 			}
-			if (maxx == maxy && maxx == -5) {
+			if (minx == miny && minx == 30000) {
 				// 旁边都是墙，我也不知道怎么走
 				return;
 			}
 
-			var force_direc = new Force (maxx, maxy);
+			var force_direc = new Force (minx, miny);
 			force_direc.Normalize ();
 
 			// 方向的单位矢量乘以常数

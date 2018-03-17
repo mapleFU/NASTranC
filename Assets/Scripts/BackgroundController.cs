@@ -158,18 +158,20 @@ namespace SimuUtils {
 		// Use this for initialization
 		private static readonly object syncLock = new object();
 		public virtual void Start () {
+			childObjects.backGround = this.gameObject;
 			// 生成基本的势能场(格点矩阵)，来根据势能场判断人物的选点
 //			initialize_potenial_energy ();
 //			Debug.Log("X and Y is " + height + " and " + width);
-			myLayer = gameObject.layer = layer_num;
-			lock (syncLock) {
-				if (layer_num == 0) {
-					layer_num = 1;
-				} else {
-					// *= 2;
-					layer_num = 2 * layer_num;
-				}
-			}
+			myLayer = gameObject.layer;
+//			= layer_num;
+//			lock (syncLock) {
+//				if (layer_num == 0) {
+//					layer_num = 1;
+//				} else {
+//					// *= 2;
+//					layer_num = 2 * layer_num;
+//				}
+//			}
 			Debug.Log ("BKG controller start.");
 		}
 

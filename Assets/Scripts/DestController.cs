@@ -27,7 +27,7 @@ namespace SimuUtils
 
 			HelperScript.change_z (this);
 
-//			Debug.Log ("Add a Dest.");
+//			Debug.Log ("Add a Dest in layer in " + father_containers.backGround);
 		}
 
 	
@@ -35,13 +35,16 @@ namespace SimuUtils
 		// if find "human" with tag
 		void OnTriggerEnter2D (Collider2D other)
 		{
+			Debug.Log("Human trigger.");
 			if (other.gameObject.CompareTag ("Human"))
 			{
+				if (this.gameObject.layer != other.gameObject.layer)
+					return;
 				if (CameraScript.Instance.watched_player == other.transform) {
 					CameraScript.Instance.deBind ();
 				}
 				other.gameObject.SetActive (false);
-				Debug.Log ("Human pass! in Layer" + other.gameObject.layer);
+//				Debug.Log ("Human pass! in Layer" + other.gameObject.layer);
 			}
 		}
 
