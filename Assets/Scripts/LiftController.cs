@@ -29,6 +29,11 @@ namespace SimuUtils
 			var daddy = get_parent_script ();	// 获得父对象
 //			Debug.Log ("Intended to create lifts in bkg: " + daddy.gameObject);
 			base.Start ();
+
+			if (!daddy.childObjects.dests.Contains (this)) {
+				daddy.childObjects.dests.Add (this);
+			}
+
 //			bkg_ctrl = this.gameObject.transform.parent.gameObject.GetComponent<BackgroundController> ();
 			bkg_ctrl = daddy;
 			if (!bkg_ctrl) {
@@ -58,6 +63,18 @@ namespace SimuUtils
 				if (!script.lift_available(this)) {
 					return;
 				}
+
+				// 每个 cross channel 是等同的。
+				Debug.Log ("Print eqlist in trigger.This is: " + this);
+				if (script.used_list != null) {
+					foreach (LiftController controller in script.used_list) {
+						Debug.Log (controller);
+					}
+				} else {
+					Debug.Log ("No used list.");
+				}
+
+
 				if (script == null) {
 					Debug.Log ("Bad Human! Human here don't have script!");
 					return;

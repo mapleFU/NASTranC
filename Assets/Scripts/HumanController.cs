@@ -163,7 +163,7 @@ namespace SimuUtils
 				++cnt;
 //				if (behaviour == used_lift) 
 //					continue;
-				if (behaviour.GetType() == typeof(LiftController) && lift_available (behaviour as LiftController)) {
+				if (behaviour.GetType() == typeof(LiftController) && !lift_available (behaviour as LiftController)) {
 					continue;
 				}
 				GameObject dst = behaviour.gameObject;
@@ -209,7 +209,16 @@ namespace SimuUtils
 			// TODO: 初始化对应速度
 			//		rb.velocity;
 			if (dest == null) {
-				Debug.LogError ("We dont have a dest.");
+				Debug.LogError ("We dont have a dest. And Below are things:");
+				if (father_containers == null) {
+					Debug.LogError ("Even no dad!");
+				} else {
+					init_destine ();
+//					foreach (HumanController human in father_containers.humans) {
+//						Debug.Log (human);
+//					}
+				}
+
 			}
 			Vector3 dir = dest.transform.position - transform.position;
 			dir.z = 0;
@@ -235,6 +244,9 @@ namespace SimuUtils
 			BackgroundController new_father_script = to_script as BackgroundController;
 			this.transform.parent = new_father_script.transform;
 			father_containers = new_father_script.childObjects;
+			if (father_containers == null) {
+				Debug.Log ("Fathers are null.");
+			}
 		}
 
 		/*

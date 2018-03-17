@@ -8,6 +8,7 @@ TagManager:
   - Dest
   - Border
   - Blocking
+  - Lift
   layers:
   - Default
   - TransparentFX

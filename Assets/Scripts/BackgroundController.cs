@@ -172,7 +172,7 @@ namespace SimuUtils {
 //					layer_num = 2 * layer_num;
 //				}
 //			}
-			Debug.Log ("BKG controller start.");
+//			Debug.Log ("BKG controller start.");
 		}
 
 		// 初始化势能

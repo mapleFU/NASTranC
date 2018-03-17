@@ -19,7 +19,9 @@ public class CrossChannelController : BaseChildObject {
 	 */ 
 	void Awake () {
 		var script = get_parent_script ();
+
 		HashSet<LiftController> equal_lists = new HashSet<LiftController> ();
+		HashSet<LiftController> reversed_equal_lists = new HashSet<LiftController> (); 	// 反向的eqlist
 //		Debug.Log ("Create cross channel in " + script.gameObject);
 		foreach (Transform myTrans in transform) {
 			switch (myTrans.name) {
@@ -27,48 +29,56 @@ public class CrossChannelController : BaseChildObject {
 			case "Lift":
 				mid = myTrans.GetComponent<LiftController> ();
 				mid.parentObject = script.gameObject;
-				equal_lists.Add (mid);
+				reversed_equal_lists.Add (mid);
 				break;
 			case "UpLift":
 			case "Lift (2)":
 				up = myTrans.GetComponent<LiftController> ();
 				up.parentObject = script.gameObject;
-				equal_lists.Add (mid);
+				reversed_equal_lists.Add (up);
 				break;
 			case "DownLift":
 			case "Lift (1)":
 				down = myTrans.GetComponent<LiftController> ();
 				down.parentObject = script.gameObject;
-				equal_lists.Add (mid);
+				reversed_equal_lists.Add (down);
 				break;
 			default:
 				break;
 			}
 		}
-		// 每个 cross channel 是等同的。
-		foreach (LiftController controller in equal_lists) {
-			controller.un_allowed_lifts = equal_lists;
-		}
+
+
 
 //		Debug.Log ("My mid is " + mid + " up is " + up);
 		foreach (Transform childTrans in to ) {
 			switch (childTrans.name) {
 			case "SquareStairMid":
-				get_aim (mid, childTrans.gameObject);
+				get_aim (mid, childTrans.gameObject, equal_lists);
 				break;
 			case "SquareStairUp":
-				get_aim (up, childTrans.gameObject);
+				get_aim (up, childTrans.gameObject, equal_lists);
 				break;
 			case "SquareStairDown":
-				get_aim (down, childTrans.gameObject);
+				get_aim (down, childTrans.gameObject, equal_lists);
 				break;
 			default:
 				break;
 			}
 		}
+		/*
+		 *  正向反向填充eqlist.
+		 */ 
+		foreach (LiftController lc in reversed_equal_lists) {
+			lc.un_allowed_lifts = equal_lists;
+		}
+		foreach (LiftController lc in equal_lists) {
+			lc.un_allowed_lifts = reversed_equal_lists;
+		}
+		return;
 	}
 
-	private void get_aim(LiftController lift1, GameObject stair) {
+	private void get_aim(LiftController lift1, GameObject stair, HashSet<LiftController> eqlist) {
 		LiftController goto_left = null, goto_right = null;
 
 		foreach (Transform child in stair.transform) {
@@ -89,11 +99,13 @@ public class CrossChannelController : BaseChildObject {
 		if (up_or_down == false) {
 			lift1.to = goto_left.gameObject;
 			goto_left.to = lift1.gameObject;
+			eqlist.Add (goto_left.gameObject.GetComponent<LiftController> ());
 		} else {
 			
 //			Debug.Log ("Attach right lift.");
 			lift1.to = goto_right.gameObject;
 			goto_right.to = lift1.gameObject;
+			eqlist.Add (goto_right.gameObject.GetComponent<LiftController> ());
 		}
 
 		return;
