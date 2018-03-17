@@ -28,8 +28,8 @@ public class MetroController : BaseChildObject
 	 * 地铁站会有人下车
 	 * 在这里填写下车的逻辑
 	 */ 
-	public static float down_time;		// 下车时间
-	public static int per_wave;			// 每一波的人
+	public float down_time;		// 下车时间间隔
+	public int per_wave;		// 每一波的人
 	public void Update() {
 		down_time -= Time.deltaTime;
 		if (down_time < 0) {

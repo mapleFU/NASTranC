@@ -31,7 +31,9 @@ namespace SimuUtils
 			}
 		}
 
-		void OnTriggerEnter2D (Collider2D other)
+
+
+		protected virtual void OnTriggerEnter2D (Collider2D other)
 		{
 			if (other.gameObject.CompareTag ("Human"))
 			{
@@ -54,9 +56,7 @@ namespace SimuUtils
 				if (to_script == null) {
 					to_script = to.transform.parent.GetComponent<EscalatorController> ();
 				}
-//				if (to_script == null) {
-//					to_script = to.transform.parent.GetComponent<StairController> ();
-//				}
+
 
 				/*
 				 * 更换父对象的代码
@@ -70,8 +70,6 @@ namespace SimuUtils
 				game_obj.transform.parent = to.transform.parent;
 				script.gameObject.transform.parent = to.transform.parent;
 				to_script.add_person (game_obj);
-//				Debug.Log (game_obj + " change father to " + to_script.gameObject + 
-//					" which layer num is " + to_script.gameObject.layer);
 
 				// 改变位置
 				other.transform.position = to.transform.position;
@@ -91,6 +89,13 @@ namespace SimuUtils
 					Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
 				}
 
+				LiftController to_controller = to.GetComponent<LiftController> ();
+				if (to_controller != null) {
+					// the to object is still a lift
+					// should we handle the slow lift?
+					script.used_lift = to_controller;
+//					to_controller.speed_init (script.gameObject);
+				}
 
 				script.transform.localScale = localscale;
 				script.transform.rotation = rotate;

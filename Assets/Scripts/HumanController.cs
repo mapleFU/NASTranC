@@ -20,6 +20,8 @@ namespace SimuUtils
 			in_disaster = true;	
 		}
 
+		// 人出现的目标点
+
 		// 每一个格子格点的大小，在一个项目中是固定的
 		public static float grid_size;
 
@@ -27,7 +29,7 @@ namespace SimuUtils
 
 		private ChildObjects father_containers;
 		// 使用过的lift
-		LiftController used_lift = null;
+		public LiftController used_lift = null;
 
 		static public double RandomGussion(double mean, double stdDev)
 		{
@@ -129,9 +131,8 @@ namespace SimuUtils
 		{
 			init_destine ();
 			dest.GetComponent<DestController> ();
-
 		}
-
+			
 		// Use this for initialization
 		// 初始化目的地, 本算法选取的是最小的
 		private void init_destine()
@@ -366,6 +367,52 @@ namespace SimuUtils
 			Vector3 dir = dest.transform.position - transform.position;
 			dir.z = 0;
 			return dir.normalized;
+		}
+
+		// 势能场力常数
+		public float potential_energy_field_constexpr;
+
+		private delegate bool inmap(int x, int y);
+		private void potential_energy_field() {
+			var bkg_script = get_parent_script();
+			var map = bkg_script.Map;
+
+			// get map of size
+			int rank = bkg_script.x;
+			int length = bkg_script.y;
+
+			// in map lambda
+			inmap if_in = (a, b) => {
+				return a < rank && b < length;
+			};
+
+			Vector2 map_vec2 = bkg_script.pos2mapv (this.transform.position);
+			int x = (int)map_vec2.x;
+			int y = (int)map_vec2.y;
+
+
+			int maxx=-5, maxy=-5;
+			float max_value = -6;
+			for (int i = x - 2; i <= x + 2; ++i) {
+				for (int j = y - 2; j <= y + 2; ++j) {
+					if (if_in (i, j)) {
+						// 这个点在map中
+						if (map[i, j] > max_value) {
+							maxx = i;
+							maxy = j;
+						}
+					}
+				}
+			}
+			if (maxx == maxy && maxx == -5) {
+				// 旁边都是墙，我也不知道怎么走
+				return;
+			}
+			var force_direc = new Force (maxx, maxy);
+
+			// 方向乘以常数
+			rb.AddForce (force_direc.Normalize() * potential_energy_field_constexpr);
+
 		}
 
 		void OnCollisionEnter2D (Collision2D other)

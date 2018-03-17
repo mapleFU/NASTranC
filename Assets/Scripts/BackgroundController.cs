@@ -206,7 +206,7 @@ namespace SimuUtils {
 			height = render.bounds.size.y;
 			Debug.Log("width= " + width + ", height= " + height);
 			// the map may be bigger than you wish to be
-			map = new float[(int)width, (int)height];
+			map = new float[(int)width + 1, (int)height + 1];
 			// don't init it now.
 //			init_map ();
 		}
@@ -232,9 +232,9 @@ namespace SimuUtils {
 		/*
 		 * 地图坐标转化为整数坐标
 		 */ 
-		private Vector2 mapv2pos(Vector2 pos) {
-			float gridx = (( width / 2 + pos.x) / grid_size);
-			float gridy = (( height / 2 + pos.y) / grid_size);;
+		public Vector2 pos2mapv(Vector2 pos) {
+			float gridx = (float)Math.Ceiling(pos.x / grid_size);
+			float gridy = (float)Math.Ceiling(pos.y / grid_size);
 			return new Vector2 (gridx, gridy);
 		}
 
