@@ -9,6 +9,7 @@ using SimuUtils;
 public class CrossChannelController : MonoBehaviour {
 	// 连接的 UpArea 对象
 	public Transform to;
+	public bool up_or_down;
 	private LiftController up;
 	private LiftController mid;
 	private LiftController down;
@@ -67,7 +68,8 @@ public class CrossChannelController : MonoBehaviour {
 				break;
 			}
 		}
-		if (lift1.up_or_down == false) {
+		lift1.up_or_down = up_or_down;
+		if (up_or_down == false) {
 			lift1.to = goto_left.gameObject;
 			goto_left.to = lift1.gameObject;
 		} else {

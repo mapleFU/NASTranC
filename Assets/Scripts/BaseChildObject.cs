@@ -30,7 +30,7 @@ namespace SimuUtils {
 					Debug.LogError ("A " + this.GetType() + " doesn't have a parent.");
 				}
 				// 再次递归向上的查找
-				while (parentTrans.parent != null) {
+				while (!(parentTrans.parent is BackgroundController)) {
 					parentTrans = parentTrans.parent;
 				}
 				parentObject = this.transform.parent.gameObject;

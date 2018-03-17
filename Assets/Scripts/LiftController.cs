@@ -29,6 +29,7 @@ namespace SimuUtils
 				Debug.Log("Lift should be a component of the background!");
 				return;
 			}
+			Debug.Log ("Lift Controller init.");
 		}
 
 

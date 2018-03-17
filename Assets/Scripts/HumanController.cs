@@ -184,17 +184,23 @@ namespace SimuUtils
 		 */ 
 		private void init_speed()
 		{
-
+			Debug.Log("Start init speed");
 			_normal_exc_speed = RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
 			_disaster_exc_speed = RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
+			Debug.Log ("Init speed expr");
 
 			cur_speed = RandomGussion (reality_inispeed_mean, reality_inispeed_stddev);
+			Debug.Log ("Init cur speed.");
 			// TODO: 初始化对应速度
 			//		rb.velocity;
+			if (dest == null) {
+				Debug.Log ("Fuck you!");
+			}
 			Vector3 dir = dest.transform.position - transform.position;
 			dir.z = 0;
 			dir = dir.normalized;
 			rb.velocity = dir * (float)cur_speed;
+
 		}
 
 		// 初始化体重，希望能和radius相关
@@ -221,6 +227,7 @@ namespace SimuUtils
 		 */ 
 		public override void Start () {
 			// to myself first.
+			Debug.Log("Human want's to start.");
 			var daddy = get_parent_script();
 			father_containers = daddy.childObjects;
 
@@ -228,11 +235,15 @@ namespace SimuUtils
 			// 添加自己的对象
 //			humans.Add (this);
 //			HelperScript.change_z (this);
-
+			Debug.Log("Human begin to init");
 			init_radius ();
+			Debug.Log("init radius");
 			init_weight ();
+			Debug.Log ("init weight");
 			init_destine ();
+			Debug.Log ("init destine");
 			init_speed ();
+			Debug.Log ("init speed.");
 
 			in_disaster = false;
 			Debug.Log ("Add a Human.");
@@ -362,6 +373,7 @@ namespace SimuUtils
 			}
 			return v1;
 		}
+
 		private Vector2 get_direction_to_dest()
 		{
 			Vector3 dir = dest.transform.position - transform.position;

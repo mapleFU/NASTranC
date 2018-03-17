@@ -19,7 +19,7 @@ namespace SimuUtils
 //			if (!daddy) print("Object has no parent");
 //			var script = daddy.GetComponent<BackgroundController>();
 //			if (!script) print("Parent has no EnemyData script");
-			Debug.Log ("DestController ready to get parent script.");
+//			Debug.Log ("DestController ready to get parent script.");
 			var script = get_parent_script();
 			father_containers = script.childObjects;
 			father_containers.dests.Add (this);
@@ -27,7 +27,7 @@ namespace SimuUtils
 
 			HelperScript.change_z (this);
 
-			Debug.Log ("Add a Dest.");
+//			Debug.Log ("Add a Dest.");
 		}
 
 	
