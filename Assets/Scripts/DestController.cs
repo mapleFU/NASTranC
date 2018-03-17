@@ -44,7 +44,7 @@ namespace SimuUtils
 					CameraScript.Instance.deBind ();
 				}
 				other.gameObject.SetActive (false);
-//				Debug.Log ("Human pass! in Layer" + other.gameObject.layer);
+				Debug.Log ("Human pass! in Layer" + other.gameObject.layer);
 			}
 		}
 

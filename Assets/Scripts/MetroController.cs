@@ -6,7 +6,7 @@ using UnityEngine;
 public class MetroController : BaseChildObject
 {
 	// 人类的prefab, 用于创建
-	public static Transform humanPrefab;
+	public Transform humanPrefab;
 
 	private Transform parentTransform;
 	private BackgroundController p_script;
@@ -18,9 +18,12 @@ public class MetroController : BaseChildObject
 		base.Start ();
 		p_script = get_parent_script ();
 		parentTransform = p_script.transform;
-		bound = get_box_render ();
+		bound = GetComponent<BoxCollider2D> ().bounds;
 		width = bound.size.x;
-		height = bound.size.y;
+//		get_box_render (); error code.
+		Debug.Log ("Width "+ width );
+
+		height = bound.size.y * transform.localScale.y;
 		rd = new System.Random ();
 	}
 
@@ -30,33 +33,45 @@ public class MetroController : BaseChildObject
 	 */ 
 	public float down_time;		// 下车时间间隔
 	public int per_wave;		// 每一波的人
-	public void Update() {
-		down_time -= Time.deltaTime;
-		if (down_time < 0) {
-			for (int i = 0; i < per_wave; ++i)
-				add_person ();
-		}
-	}
 
-	private Vector2 generate_pos() {
-
-		return new Vector2 ((float)rd.NextDouble( ) * width + gameObject.transform.position.x,
-			(float)rd.NextDouble( ) * height + gameObject.transform.position.y);
+	/*
+	 * 被定时调用的人物生成函数
+	 */ 
+	private void invoked() {
+		for (int i = 0; i < per_wave; ++i)
+			add_person ();
 	}
 
 	/*
 	 * 获取某人下车的位置
 	 */ 
-	private Vector2 generate_position() {
-		return new Vector2(width, height);
+	private Vector3 generate_pos() {
+		return new Vector3 ((float)rd.NextDouble() * width + gameObject.transform.position.x,
+			(float)rd.NextDouble() * height + gameObject.transform.position.y, -0.41f);
 	}
+
 
 	/*
 	 * 某人下车
 	 */ 
 	private void add_person() {
-		var gameobj = Instantiate (humanPrefab, generate_position(), transform.localRotation, parentTransform);
-		gameobj.gameObject.layer = p_script.myLayer;
+//		Debug.Log ("My daddy: " + get_parent_script().transform);
+		var pos = generate_pos ();
+//		Debug.Log ("Pos = " + pos);
+		var gameobj = Instantiate (humanPrefab, pos,
+			Quaternion.identity, parentTransform);
+		gameobj.transform.parent = p_script.transform;
+
+
+//		Debug.Log ("Add person!");
+//		Debug.Log ("Pos is " + gameobj.transform.position);
+		gameobj.gameObject.layer = p_script.gameObject.layer;
+		HumanController p_c = gameobj.GetComponent<HumanController> ();
+		p_c.Start ();
+	}
+
+	void Awake()  {
+		Invoke ("invoked", down_time);
 	}
 }
 

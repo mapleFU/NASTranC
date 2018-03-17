@@ -34,7 +34,11 @@ public class CameraScript : MonoBehaviour {
 		cam = this.gameObject.GetComponent<Camera> ();
 
 		if (watched_player) {
-			onBind (watched_player.GetComponent<HumanController> ());
+			var script = watched_player.GetComponent<HumanController> ();
+			if (script)
+				onBind (script);
+			else
+				relayer_child_camera ();
 		}
 	}
 
@@ -81,7 +85,6 @@ public class CameraScript : MonoBehaviour {
 	 * 绑定在一个对象或者层级更换的时候
 	 * 发布订阅模式？
 	 */ 
-
 	public void onBind(HumanController humanController) {
 //		Debug.Log ("Bind " + humanController.ToString ());
 		watched_player = humanController.gameObject.transform;

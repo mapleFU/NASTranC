@@ -142,7 +142,7 @@ namespace SimuUtils
 		{
 			init_destine ();
 			var to_dest = dest.GetComponent<DestController> ();
-			Debug.Log ("THe new dest is " + to_dest);
+//			Debug.Log ("THe new dest is " + to_dest);
 		}
 			
 		// Use this for initialization

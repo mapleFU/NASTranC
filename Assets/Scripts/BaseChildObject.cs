@@ -13,7 +13,22 @@ namespace SimuUtils {
 
 		virtual public void Start() {
 			var script = get_parent_script ();
-			gameObject.layer = script.myLayer;
+			if (script == null) {
+				if (this.CompareTag ("Human")) {
+					var obj = GameObject.FindGameObjectWithTag ("Subway");
+					Debug.Log ("OBJ: " + obj);
+					MetroController m_s = obj.GetComponent<MetroController> ();
+					script = m_s.get_parent_script ();
+
+				}
+			}
+			if (gameObject == null) {
+				Debug.Log ("Gameobject Not here");
+			}
+			if (script == null) {
+				Debug.Log ("我日你妈");
+			}
+			gameObject.layer = script.gameObject.layer;
 		}
 		/*
 		 * 获得父对象的脚本
@@ -44,7 +59,7 @@ namespace SimuUtils {
 				bkg = parentObject.GetComponent<BackgroundController> ();
 				if (bkg == null) {
 					if (this.gameObject.name.Contains ("Block")) {
-						Debug.Log ("This area is runned.");
+//						Debug.Log ("This area is runned.");
 						parentObject = transform.parent.parent.gameObject;
 						return parentObject.GetComponent<BackgroundController> ();
 					}

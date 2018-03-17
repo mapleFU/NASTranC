@@ -5,11 +5,13 @@ using SimuUtils;
 
 /*
  * 控制CrossChannel
+ * 楼梯在dests里面
+ * 可以通过 dests[i].GetType() == typeof(LiftController) 判断是不是楼梯
  */ 
 public class CrossChannelController : BaseChildObject {
 	// 连接的 UpArea 对象
 	public Transform to;
-	public bool up_or_down;
+	public bool up_or_down;		// 楼梯是上是下
 	private LiftController up;
 	private LiftController mid;
 	private LiftController down;

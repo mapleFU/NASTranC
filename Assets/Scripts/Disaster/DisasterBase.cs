@@ -1,19 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DisasterBase : MonoBehaviour
-{
+using SimuUtils;
 
-	// Use this for initialization
-	void Start ()
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-	
+public class DisasterBase : BaseChildObject
+{
+	// 生成的事件
+	public float generated_time;
+	void Start() {
+		base.Start ();
 	}
 }
 

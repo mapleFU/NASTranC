@@ -64,16 +64,16 @@ namespace SimuUtils
 					return;
 				}
 
-				// 每个 cross channel 是等同的。
-				Debug.Log ("Print eqlist in trigger.This is: " + this);
-				if (script.used_list != null) {
-					foreach (LiftController controller in script.used_list) {
-						Debug.Log (controller);
-					}
-				} else {
-					Debug.Log ("No used list.");
-				}
-
+//				// 每个 cross channel 是等同的。
+//				Debug.Log ("Print eqlist in trigger.This is: " + this);
+//				if (script.used_list != null) {
+//					foreach (LiftController controller in script.used_list) {
+//						Debug.Log (controller);
+//					}
+//				} else {
+//					Debug.Log ("No used list.");
+//				}
+//
 
 				if (script == null) {
 					Debug.Log ("Bad Human! Human here don't have script!");

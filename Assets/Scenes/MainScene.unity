@@ -452,11 +452,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 20370c937f6d9411ea798ce137186837, type: 2}
   m_IsPrefabParent: 0
---- !u!4 &602537764 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4134601466408130, guid: 20370c937f6d9411ea798ce137186837,
-    type: 2}
-  m_PrefabInternal: {fileID: 592842812}
 --- !u!1 &870853002 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1346024204956864, guid: cea19951dc40c47db8e18ff273079920,
@@ -579,7 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3494c90504d584a40b2242ef71e8600c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  watched_player: {fileID: 602537764}
+  watched_player: {fileID: 1419907564}
   turnSpeed: 10
   height: -10
   distance: 5
@@ -934,7 +929,7 @@ Prefab:
     - target: {fileID: 114591870989874194, guid: 91f3dd39e57dc43f38be2b1fd6fc2314,
         type: 2}
       propertyPath: down_time
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 114591870989874194, guid: 91f3dd39e57dc43f38be2b1fd6fc2314,
         type: 2}
@@ -1323,6 +1318,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 20370c937f6d9411ea798ce137186837, type: 2}
   m_IsPrefabParent: 0
+--- !u!4 &1419907564 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4702838459237058, guid: 91f3dd39e57dc43f38be2b1fd6fc2314,
+    type: 2}
+  m_PrefabInternal: {fileID: 1096422893}
 --- !u!1 &1479048699 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1402661435289056, guid: cea19951dc40c47db8e18ff273079920,
