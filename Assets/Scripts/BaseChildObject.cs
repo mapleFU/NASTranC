@@ -30,7 +30,8 @@ namespace SimuUtils {
 					Debug.LogError ("A " + this.GetType() + " doesn't have a parent.");
 				}
 				// 再次递归向上的查找
-				while (!(parentTrans.parent is BackgroundController)) {
+				// 父对象不是bkgC而且有再上一层的父对象
+				while (parentTrans.GetType() != typeof(BackgroundController) && parentTrans.parent != null) {
 					parentTrans = parentTrans.parent;
 				}
 				parentObject = this.transform.parent.gameObject;
