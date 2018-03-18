@@ -283,9 +283,8 @@ namespace SimuUtils
 
 		// count force 
 		public void Update () {
-//			if (!this.isActiveAndEnabled)
-//				return;
-			
+			// DEBUG
+			Debug.Log (get_parent_script().pos2mapv(this.transform.position));
 			// update speed
 			cur_speed = rb.velocity.magnitude;
 
@@ -426,6 +425,8 @@ namespace SimuUtils
 		 */ 
 
 		private float[,] find_min_apf(List<float[,]> apf_list, int cur_x, int cur_y) {
+			if (apf_list == null)
+				Debug.Log ("APF list is null.");
 			float[,] min_arr = null;
 			float min_value = 30000;		// 设置一个很大的初值
 			foreach (float[,] arr in apf_list) {

@@ -195,6 +195,9 @@ namespace SimuUtils {
 		// Use this for initialization
 		private static readonly object syncLock = new object();
 		public virtual void Start () {
+			const float shrink_rate = 1000.0f;
+			grid_size /= shrink_rate;
+
 			childObjects.backGround = this.gameObject;
 			// 生成基本的势能场(格点矩阵)，来根据势能场判断人物的选点
 //			initialize_potenial_energy ();
@@ -215,40 +218,13 @@ namespace SimuUtils {
 		// 初始化势能
 		void initialize_potenial_energy()
 		{
-//			// initial map
-//			GameObject[] borders = GameObject.FindGameObjectsWithTag ("Border");
-//			// TODO: fix this
-//
-//			foreach (GameObject bdr in borders)
-//			{
-//				if (bdr.transform.position.x > 0) {
-//					if (bdr.transform.position.y > 0) {
-//						ur_border = bdr;
-//					} else {
-//						dr_border = bdr;
-//					}
-//				} else {
-//					if (bdr.transform.position.y > 0) {
-//						ul_border = bdr;
-//					} else {
-//						dl_border = bdr;
-//					}
-//				}
-//			}
-//			int width_all = (int)Math.Ceiling(ur_border.transform.position.x / GRID_SIZE) + (int)Math.Ceiling(-ul_border.transform.position.x / GRID_SIZE);
-//			int height_all = (int)Math.Ceiling(ul_border.transform.position.y / GRID_SIZE) + (int)Math.Ceiling(-dl_border.transform.position.y / GRID_SIZE);
-//			width = width_all;
-//			height = height_all;
-
-
-//			SpriteRenderer render = GetComponent<SpriteRenderer> ();
 			var bounds = GetComponent<BoxCollider2D> ();
 
 			// 获得长与宽
 			width = bounds.size.x;
 			height = bounds.size.y;
-			xmin = transform.position.x - width;	// x 最小的坐标
-			ymin = transform.position.y - height;	// y 最小的坐标
+			xmin = transform.position.x - width / 2;	// x 最小的坐标
+			ymin = transform.position.y - height / 2;	// y 最小的坐标
 			Debug.Log("width= " + width + ", height= " + height);
 			// the map may be bigger than you wish to be
 			/*
@@ -289,8 +265,9 @@ namespace SimuUtils {
 		 * 地图坐标转化为整数坐标
 		 */ 
 		public Vector2 pos2mapv(Vector2 pos) {
-			float gridx = (float)Math.Ceiling((pos.x - xmin) / grid_size);
-			float gridy = (float)Math.Ceiling((pos.y - ymin)/ grid_size);
+			
+			float gridx = (float)Math.Ceiling(Math.Abs((pos.x - xmin) / grid_size));
+			float gridy = (float)Math.Ceiling(Math.Abs((pos.y - ymin)/ grid_size));
 			return new Vector2 (gridx, gridy);
 		}
 
