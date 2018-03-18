@@ -38,6 +38,7 @@ public class MetroController : BaseChildObject
 	 * 被定时调用的人物生成函数
 	 */ 
 	private void invoked() {
+		Invoke ("invoked", down_time);
 		for (int i = 0; i < per_wave; ++i)
 			add_person ();
 	}
@@ -46,6 +47,7 @@ public class MetroController : BaseChildObject
 	 * 获取某人下车的位置
 	 */ 
 	private Vector3 generate_pos() {
+		
 		return new Vector3 ((float)rd.NextDouble() * width + gameObject.transform.position.x,
 			(float)rd.NextDouble() * height + gameObject.transform.position.y, -0.41f);
 	}

@@ -72,6 +72,7 @@ namespace SimuUtils {
 		public int myLayer;
 		private float height;
 		private float width;
+		private float xmin, ymin;
 		// 双亲的长度
 		private float parent_x;		
 		private float parent_y;
@@ -91,6 +92,42 @@ namespace SimuUtils {
 			get {
 				return map;
 			}
+		}
+
+//		// 势能场数组
+//		private ArrayList apfs;
+//		/*
+//		 *  得到第n个apf
+//		 */ 
+//		public float[,] get_apf_n(int n) {
+//			if (n >= apfs.Count || n <= 0) {
+//				return null;
+//			} else {
+//				return apfs[n];
+//			}
+//		}
+
+		public float[,] APF01;
+		public float[,] APF02;
+		public float[,] APF03;
+		public float[,] APF04;
+		public List<float[,]> APF05;
+		public List<float[,]> APF06;
+		public float[,] APF11;
+		public float[,] APF12;
+		public float[,] APF13;
+		public float[,] APF14;
+		public List<float[,]> APF15;
+		public List<float[,]> APF16;
+
+		/*
+		 * 本层是否是楼梯
+		 * 是则返回true
+		 * 否则返回false
+		 */
+		public bool on_stair_or_not() {
+			// 有父亲的话则为stair。
+			return transform.parent != null;
 		}
 
 
@@ -203,14 +240,31 @@ namespace SimuUtils {
 //			width = width_all;
 //			height = height_all;
 
-			SpriteRenderer render = GetComponent<SpriteRenderer> ();
-			width = render.bounds.size.x;
-			height = render.bounds.size.y;
+
+//			SpriteRenderer render = GetComponent<SpriteRenderer> ();
+			var bounds = GetComponent<BoxCollider2D> ();
+
+			// 获得长与宽
+			width = bounds.size.x;
+			height = bounds.size.y;
+			xmin = transform.position.x - width;	// x 最小的坐标
+			ymin = transform.position.y - height;	// y 最小的坐标
 			Debug.Log("width= " + width + ", height= " + height);
 			// the map may be bigger than you wish to be
-			map = new float[(int)width + 1, (int)height + 1];
+			/*
+			 * 以下内容是对于每个map而言的
+			 * 对于复数个map
+			 * 需要你们补充了（;￣O￣）
+			 */ 
+			map = new float[(int)width + 1, (int)height + 1];	// 建立一个大型的数组
+			// 先把所有内容初始化为墙壁级别
+			for (int i = 0; i < (int)width + 1; ++i) {
+				for (int j = 0; j < (int)height + 1; ++j) {
+					map [i, j] = 30000.0f;
+				}
+			}
 			// don't init it now.
-//			init_map ();
+			init_map ();
 		}
 
 		/*
@@ -235,8 +289,8 @@ namespace SimuUtils {
 		 * 地图坐标转化为整数坐标
 		 */ 
 		public Vector2 pos2mapv(Vector2 pos) {
-			float gridx = (float)Math.Ceiling(pos.x / grid_size);
-			float gridy = (float)Math.Ceiling(pos.y / grid_size);
+			float gridx = (float)Math.Ceiling((pos.x - xmin) / grid_size);
+			float gridy = (float)Math.Ceiling((pos.y - ymin)/ grid_size);
 			return new Vector2 (gridx, gridy);
 		}
 

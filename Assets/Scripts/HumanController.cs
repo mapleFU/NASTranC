@@ -12,6 +12,7 @@ namespace SimuUtils
 {
 	using Force = UnityEngine.Vector2;
 
+
 	public class HumanController : BaseChildObject {
 		public bool in_disaster;	// 是否在灾害中
 		public static float MAX_DISASTER_BROADCAST;	// 人物时间步中传递灾害模式的半径
@@ -288,11 +289,13 @@ namespace SimuUtils
 			// update speed
 			cur_speed = rb.velocity.magnitude;
 
-			Force fhe = count_fhe (),
-			p2p = count_p2p(),
-			b2p = count_b2p();
+			Force 
+//				fhe = count_fhe (),
+				pfe = potential_energy_field(),
+				p2p = count_p2p(),
+				b2p = count_b2p();
 
-			Force all = fhe + p2p + b2p;
+			Force all = /*fhe*/ p2p + b2p + pfe;
 			this.rb.AddForce (all);
 
 			// 点击检测
@@ -409,14 +412,133 @@ namespace SimuUtils
 			return dir.normalized;
 		}
 
+		// 势能场判断逻辑
+		public bool has_app;	// 有app
+		public bool take_subway;	// 是否乘车, 为true是想上车，否则思想出去
+
+
+
 		// 势能场力常数
 		public float potential_energy_field_constexpr;
 
-		private delegate bool inmap(int x, int y);
-		private void potential_energy_field() {
-			var bkg_script = get_parent_script();
-			var map = bkg_script.Map;
+		/*
+		 * 根据人的属性得到需要的apf
+		 */ 
 
+		private float[,] find_min_apf(List<float[,]> apf_list, int cur_x, int cur_y) {
+			float[,] min_arr = null;
+			float min_value = 30000;		// 设置一个很大的初值
+			foreach (float[,] arr in apf_list) {
+				if (arr [cur_x, cur_y] < min_value) {
+					min_value = arr [cur_x, cur_y];
+					min_arr = arr;
+				}
+			}
+			return min_arr;
+		}
+
+		private float[,] get_apf() {
+			// 背景脚本
+			BackgroundController bkg_script = get_parent_script ();
+			float[,] needed_apf;
+			var pos = bkg_script.pos2mapv (this.current_position);
+
+			// 获得现在的x y坐标
+			int cur_x = (int)pos.x, cur_y = (int)pos.y;
+
+			if (!bkg_script.on_stair_or_not ()) {
+				// 在楼层上
+					// 楼梯扶梯可用
+				if (has_app) {
+						// 有app
+					if (take_subway) {
+						// 要乘车
+						if (ConfigConstexpr.get_instance ().es_is_running)
+							needed_apf = bkg_script.APF01;
+						else
+							needed_apf = bkg_script.APF11;
+					} else {
+						if (ConfigConstexpr.get_instance ().es_is_running)
+							needed_apf = bkg_script.APF02;
+						else
+							needed_apf = bkg_script.APF12;
+					}
+
+				} else {
+
+					List<float[,]> search_list;
+
+					// 根据有无app选择对应的list
+					if (has_app) {
+						if (ConfigConstexpr.get_instance ().es_is_running)
+							search_list = bkg_script.APF05;
+						else
+							search_list = bkg_script.APF15;
+					} else {
+						if (ConfigConstexpr.get_instance ().es_is_running)
+							search_list = bkg_script.APF06;
+						else
+							search_list = bkg_script.APF16;
+					}
+
+					const float MIN_V = 30.0f;
+					// 找到最小的数组
+					float[,] min_arr = find_min_apf (search_list, cur_x, cur_y);
+					needed_apf = min_arr;
+					// 先直接找最近的出口吧，这个逻辑恨坑的
+					init_destine ();
+				}
+
+
+			} else {
+				// 如果在楼梯／扶梯上
+				if (ConfigConstexpr.get_instance ().es_is_running) {
+					// 楼梯扶梯可用
+					if (has_app) {
+						// 有app
+
+						if (take_subway) {
+							needed_apf = bkg_script.APF01;
+						} else {
+							needed_apf = bkg_script.APF02;
+						}
+					} else {
+						if (take_subway) {
+							needed_apf = bkg_script.APF03;
+						} else {
+							needed_apf = bkg_script.APF04;
+						}
+					}
+				} else {
+					// 扶梯不能运行
+					if (has_app) {
+						// 有app
+						if (take_subway) {
+							needed_apf = bkg_script.APF11;
+						} else {
+							needed_apf = bkg_script.APF12;
+						}
+					} else {
+						if (take_subway) {
+							needed_apf = bkg_script.APF13;
+						} else {
+							needed_apf = bkg_script.APF14;
+						}
+					}
+				}
+
+
+			}
+
+			return needed_apf;
+		}
+
+
+		private delegate bool inmap(int x, int y);
+		private Force potential_energy_field() {
+			var bkg_script = get_parent_script();
+//			var map = bkg_script.Map;
+			var map = get_apf();
 			// get map of size
 			int rank = bkg_script.x;
 			int length = bkg_script.y;
@@ -445,16 +567,16 @@ namespace SimuUtils
 					}
 				}
 			}
-			if (minx == miny && minx == 30000) {
-				// 旁边都是墙，我也不知道怎么走
-				return;
-			}
+//			if (minx == miny && minx == 30000) {
+//				// 旁边都是墙，我也不知道怎么走
+//				return null;
+//			}
 
 			var force_direc = new Force (minx, miny);
 			force_direc.Normalize ();
 
 			// 方向的单位矢量乘以常数
-			rb.AddForce (force_direc * potential_energy_field_constexpr);
+			return force_direc * potential_energy_field_constexpr;
 
 		}
 

@@ -25,9 +25,6 @@ namespace SimuUtils {
 			if (gameObject == null) {
 				Debug.Log ("Gameobject Not here");
 			}
-			if (script == null) {
-				Debug.Log ("我日你妈");
-			}
 			gameObject.layer = script.gameObject.layer;
 		}
 		/*
@@ -76,7 +73,7 @@ namespace SimuUtils {
 		}
 
 		public Bounds get_box_render() {
-			SpriteRenderer cur_render = GetComponent<SpriteRenderer> ();
+			BoxCollider2D cur_render = GetComponent<BoxCollider2D> ();
 			return cur_render.bounds;
 		}
 	}
