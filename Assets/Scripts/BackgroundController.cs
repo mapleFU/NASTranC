@@ -211,16 +211,9 @@ namespace SimuUtils {
             //			initialize_potenial_energy ();
             //			Debug.Log("X and Y is " + height + " and " + width);
             myLayer = gameObject.layer;
-            //			= layer_num;
-            //			lock (syncLock) {
-            //				if (layer_num == 0) {
-            //					layer_num = 1;
-            //				} else {
-            //					// *= 2;
-            //					layer_num = 2 * layer_num;
-            //				}
-            //			}
-            Debug.Log("BKG controller start.");
+			// basic message log.
+//			Debug.Log("BKG controller start.With xmin and ymin " + xmin + " " 
+//				+ ymin + " and grid size" + grid_size + " ; width, height: " + width + ", " + height + " and position: " + transform.position);
             initialize_potenial_energy();
 
         }
@@ -228,15 +221,6 @@ namespace SimuUtils {
         // 初始化势能
         void initialize_potenial_energy()
         {
-            //var bounds = GetComponent<BoxCollider2D>();
-
-            //// 获得长与宽
-            //width = bounds.size.x;
-            //height = bounds.size.y;
-            //xmin = transform.position.x - width / 2;    // x 最小的坐标
-            //ymin = transform.position.y - height / 2;   // y 最小的坐标
-            //Debug.Log("width= " + width + ", height= " + height);
-            // the map may be bigger than you wish to be
             /*
 			 * 以下内容是对于每个map而言的
 			 * 对于复数个map
@@ -404,10 +388,16 @@ namespace SimuUtils {
 		 * 地图坐标转化为整数坐标
 		 */
         public Vector2 pos2mapv(Vector2 pos) {
-			
 			float gridx = (float)Math.Ceiling(Math.Abs((pos.x - xmin) / grid_size));
-			float gridy = y-(float)Math.Ceiling(Math.Abs((pos.y - ymin)/ grid_size));
-			return new Vector2 (gridx, gridy);
+			// TODO
+			float gridy = y - (float)Math.Ceiling(Math.Abs((pos.y - ymin)/ grid_size));
+			var mapv = new Vector2 (gridx, gridy);
+			if (gridx < 0 || gridy < 0) {
+				Debug.LogError ("pos: " + pos + " mapv : " + mapv + " xmin: " + xmin + " ymin " + ymin + " y:" + y + 
+					" father is: " + this.gameObject.name);
+			}
+
+			return mapv;
 		}
 
 //		/*

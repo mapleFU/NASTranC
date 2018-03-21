@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 namespace SimuUtils
 {
@@ -42,7 +43,7 @@ namespace SimuUtils
 				return;
 			} else {
 				if (this.gameObject.name == "Lift") {
-					Debug.Log ("Lift Controller init with aim " + to + " and father " + this.parentObject);		
+					Debug.Log ("Lift Controller init with aim " + to + " and father " + get_parent_script().gameObject);		
 				}
 				var lift = to.GetComponent<LiftController> ();
 				lift.to = this.gameObject;
@@ -51,7 +52,7 @@ namespace SimuUtils
 		}
 
 
-
+//		private static Interlocked atom_lock = new Interlocked();
 		protected virtual void OnTriggerEnter2D (Collider2D other)
 		{
 			if (other.gameObject.CompareTag ("Human"))
@@ -60,8 +61,8 @@ namespace SimuUtils
 //				other.gameObject.SetActive (false);
 				GameObject game_obj = other.gameObject;
 				HumanController script = game_obj.GetComponent<HumanController> ();
-
-				if (script.in_disaster && !up_or_down) {
+				BackgroundController old_parent = get_parent_script ();
+				if (ConfigConstexpr.get_instance().has_disaster && !up_or_down) {
 					// 如果在灾害中并且是一个下楼的楼梯
 					return;
 				}
@@ -76,25 +77,7 @@ namespace SimuUtils
 				}
 
 				// 变换主从关系
-				bkg_ctrl.childObjects.humans.Remove (game_obj);
-				// 获得Link对象的父脚本to_script
-				var to_s = to.GetComponent<LiftController>();
-				BackgroundController to_script = to_s.get_parent_script ();
-//				BackgroundController to_script = to.transform.parent.GetComponent<BackgroundController> ();
 
-				if (to_script == null) {
-					var lifts = GameObject.FindGameObjectsWithTag ("Lift");
-					foreach (GameObject lift_go in lifts) {
-						LiftController lc = lift_go.GetComponent<LiftController> ();
-						if (lc.to == this) {
-							to_script = lc.get_parent_script ();
-						}
-					}
-					if (to_script == null) {
-						Debug.LogError ("Empty1");
-					}
-
-				} 
 
 				/*
 				 * 更换父对象的代码
@@ -105,45 +88,65 @@ namespace SimuUtils
 				var rotate = other.transform.localRotation;
 				var localscale = other.transform.localScale;
 
-				// 更新 used_lift
-				LiftController to_controller = to.GetComponent<LiftController> ();
-				if (to_controller != null) {
-					// the to object is still a lift
-					// should we handle the slow lift?
-//					script.used_lift = to_controller;
+//				lock (atom_lock) 
+				{
+					bkg_ctrl.childObjects.humans.Remove (game_obj);
+					// 获得Link对象的父脚本to_script
+					var to_s = to.GetComponent<LiftController>();
+					BackgroundController to_script = to_s.get_parent_script ();
+					//				BackgroundController to_script = to.transform.parent.GetComponent<BackgroundController> ();
 
-					script.used_list = un_allowed_lifts;
-					//					to_controller.speed_init (script.gameObject);
+					if (to_script == null) {
+						var lifts = GameObject.FindGameObjectsWithTag ("Lift");
+						foreach (GameObject lift_go in lifts) {
+							LiftController lc = lift_go.GetComponent<LiftController> ();
+							if (lc.to == this) {
+								to_script = lc.get_parent_script ();
+							}
+						}
+						if (to_script == null) {
+							Debug.LogError ("Empty1");
+						}
+
+					} 
+
+					// 更新 used_lift
+					LiftController to_controller = to.GetComponent<LiftController> ();
+					if (to_controller != null) {
+						script.used_list = un_allowed_lifts;
+					}
+
+
+					game_obj.transform.parent = to.transform.parent;
+					script.gameObject.transform.parent = to.transform.parent;
+					to_script.add_person (game_obj);
+
+					// 改变位置
+					other.transform.position = to.transform.position;
+
+					// 更换目标
+					script.change_new_father_container (to_script);
+					script.change_destine ();
+
+					//				Debug.Log ("To : " + to_script.gameObject);
+					game_obj.layer = to_script.gameObject.layer;
+					/*
+					 *  need to change layer.
+					 */ 
+					// change the child and change camera
+					if (CameraScript.Instance.watched_player == script.transform) {
+						CameraScript.Instance.relayer_child_camera ();
+						Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
+					}
+
+
+
+					script.transform.localScale = localscale;
+					script.transform.rotation = rotate;
+					HelperScript.change_z (script);
+					Debug.Log ("Change " + other.gameObject.name + " from " + old_parent + " to "+  to_script);
 				}
 
-
-				game_obj.transform.parent = to.transform.parent;
-				script.gameObject.transform.parent = to.transform.parent;
-				to_script.add_person (game_obj);
-
-				// 改变位置
-				other.transform.position = to.transform.position;
-
-				// 更换目标
-				script.change_new_father_container (to_script);
-				script.change_destine ();
-
-//				Debug.Log ("To : " + to_script.gameObject);
-				game_obj.layer = to_script.gameObject.layer;
-				/*
-				 *  need to change layer.
-				 */ 
-				// change the child and change camera
-				if (CameraScript.Instance.watched_player == script.transform) {
-					CameraScript.Instance.relayer_child_camera ();
-					Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
-				}
-
-
-
-				script.transform.localScale = localscale;
-				script.transform.rotation = rotate;
-				HelperScript.change_z (script);
 
 			}
 		}

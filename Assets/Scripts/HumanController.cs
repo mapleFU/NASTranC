@@ -268,18 +268,14 @@ namespace SimuUtils
             // 防止旋转
             rb.freezeRotation=true;
 			// 添加自己的对象
-//			humans.Add (this);
-//			HelperScript.change_z (this);
-//			Debug.Log("Human begin to init");
-			init_radius ();
-//			Debug.Log("init radius");
-			init_weight ();
-//			Debug.Log ("init weight");
-			//init_destine ();
-//			Debug.Log ("init destine");
-			init_speed ();
-//			Debug.Log ("init speed.");
 
+			init_radius ();
+			init_weight ();
+			//init_destine ();
+			init_speed ();
+
+			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
+			// TODO: 将 in_disaster
 //			in_disaster = false;
 			in_disaster = true;
 		
@@ -454,13 +450,20 @@ namespace SimuUtils
 
 			float[,] min_arr = null;
 			float min_value = 300000;		// 设置一个很大的初值
-			foreach (float[,] arr in apf_list) {
-                float aaa = arr[cur_x, cur_y];
-				if (aaa < min_value && aaa >= 0) {
-					min_value = arr [cur_x, cur_y];
-					min_arr = arr;
+			try {
+				foreach (float[,] arr in apf_list) {
+					float aaa = arr[cur_x, cur_y];
+					if (aaa < min_value && aaa >= 0) {
+						min_value = arr [cur_x, cur_y];
+						min_arr = arr;
+					}
 				}
+			} catch (Exception e) {
+				Debug.LogError ("Error pos: " + transform.position + " and mapv"
+					+ get_parent_script().pos2mapv(transform.position) + "cur_x, cur_y" + cur_x + ","+ cur_y);
+				throw;
 			}
+
 			if (min_arr == null) {
 //				Debug.LogError ("MIN_ARR IS NULL. 无法找到对应的目标。");
 //				if (apf_list == null) {
@@ -485,7 +488,7 @@ namespace SimuUtils
 			// 背景脚本
 			BackgroundController bkg_script = get_parent_script ();
 			float[,] needed_apf;
-			var pos = bkg_script.pos2mapv (this.current_position);
+			var pos = bkg_script.pos2mapv (transform.position);
 
 			// 获得现在的x y坐标
 			int cur_x = (int)pos.x, cur_y = (int)pos.y;
