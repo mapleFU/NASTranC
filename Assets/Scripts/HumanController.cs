@@ -14,7 +14,16 @@ namespace SimuUtils
 
 
 	public class HumanController : BaseChildObject {
-		public bool in_disaster;	// 是否在灾害中
+
+		public static GameObject add_human(Vector2 pos , GameObject parent) {
+			GameObject instance = Instantiate(Resources.Load("Assets/GamePrefab/LittleHuman", typeof(GameObject)),
+				pos, Quaternion.identity, parent.transform) as GameObject;
+			
+			return instance;
+		}
+
+		// 个人是否察觉到灾害
+		public bool in_disaster = false;
 		public static float MAX_DISASTER_BROADCAST;	// 人物时间步中传递灾害模式的半径
 		// 进入灾害模式
 		public void to_disaster_mode () {
@@ -276,8 +285,8 @@ namespace SimuUtils
 
 			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
 			// TODO: 将 in_disaster
-//			in_disaster = false;
-			in_disaster = true;
+			in_disaster = false;
+//			in_disaster = true;
 		
 		}
 
@@ -286,7 +295,7 @@ namespace SimuUtils
 		// count force 
 		public void Update () {
 			// DEBUG
-//			Debug.Log (get_parent_script().pos2mapv(this.transform.position));
+			Debug.Log ("My pos: " + transform.position + " and pos in map " + get_parent_script().pos2mapv(transform.position) + " MyLocalScale: " + transform.localScale );
 			// update speed
 			cur_speed = rb.velocity.magnitude;
             if(cur_speed> exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
@@ -308,12 +317,6 @@ namespace SimuUtils
                 dir.z = 0;
                 this.rb.velocity = dir * 0;
             }
-            //Vector3 dir = new Vector3();
-            //dir.x = pfe.x;
-            //dir.y = pfe.y;
-            //dir.z = 0;
-            //dir = dir.normalized;
-            //this.rb.velocity= dir* exc_speed;
             this.rb.AddForce(all);
             //点击检测
             if (Input.GetButtonDown("Fire1")) {

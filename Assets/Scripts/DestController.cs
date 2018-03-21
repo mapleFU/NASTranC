@@ -30,7 +30,25 @@ namespace SimuUtils
 //			Debug.Log ("Add a Dest in layer in " + father_containers.backGround);
 		}
 
-	
+		// 可以设置的
+		public int person_per_wave = 3;	// 每一波添加的人，可以设置成相关的别的常数
+		public float add_time = 1;
+		// 添加人
+		void dest_add_person() {
+			for (int i = 0; i < person_per_wave; ++i) {
+				var newman = HumanController.add_human(transform.position, get_parent_script().gameObject);
+				newman.layer = gameObject.layer;
+				HumanController new_script = newman.GetComponent<HumanController> ();
+				new_script.take_subway = true;
+				new_script.Start ();
+			}
+				
+			Invoke ("dest_add_person", add_time);
+		}
+
+		void Awake()  {
+			Invoke ("dest_add_person", add_time);
+		}
 
 		// if find "human" with tag
 		void OnTriggerEnter2D (Collider2D other)
@@ -38,8 +56,15 @@ namespace SimuUtils
 //			Debug.Log("Human trigger.");
 			if (other.gameObject.CompareTag ("Human"))
 			{
+				
 				if (this.gameObject.layer != other.gameObject.layer)
 					return;
+				HumanController hc = other.GetComponent<HumanController> ();
+				// 
+				if (!ConfigConstexpr.get_instance ().has_disaster && hc.take_subway) {
+					// 无灾难，坐地铁，跑路
+					return;
+				}
 				if (CameraScript.Instance.watched_player == other.transform) {
 					CameraScript.Instance.deBind ();
 				}

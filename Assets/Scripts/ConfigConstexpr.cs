@@ -11,7 +11,10 @@ namespace SimuUtils
 		private static ConfigConstexpr Instance;
 
 		// 扶梯可以运行
-		public bool es_is_running;
+		public bool es_is_running {
+			// 没有灾害正常运行
+			get {return !has_disaster; }
+		}
 		// 有灾害
 		public bool has_disaster;
 		// 单例的获得
@@ -23,8 +26,17 @@ namespace SimuUtils
 		}
 
 		private ConfigConstexpr () { 
-			es_is_running = false;
+//			es_is_running = false;
 			has_disaster = false;
+		}
+
+		// 设置灾害出现
+		public static void set_disaster() {
+			get_instance().has_disaster = true;
+		}
+
+		public static void cancel_disaster() {
+			get_instance().has_disaster = false;
 		}
 	}
 }

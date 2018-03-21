@@ -40,16 +40,27 @@ public class MetroController : BaseChildObject
 	 * 地铁站会有人下车
 	 * 在这里填写下车的逻辑
 	 */
-    public float down_time;		// 下车时间间隔
+	public float wait_time;		// 每波车等待的事件
+    public float down_time;		// 允许上车时间间隔
 	public int per_wave;		// 每一波的人
+	private bool can_go_up;		// 可以上车
 
 	/*
 	 * 被定时调用的人物生成函数
 	 */ 
 	private void invoked() {
+		// 可以上车了
+		can_go_up = true;
 		Invoke ("invoked", down_time);
+		Invoke ("set_cannot_goup", wait_time);
 		for (int i = 0; i < per_wave; ++i)
 			add_person ();
+		// 延时执行
+
+	}
+
+	private void set_cannot_goup() {
+		can_go_up = false;
 	}
 
     /*
@@ -74,8 +85,7 @@ public class MetroController : BaseChildObject
 //		Debug.Log ("My daddy: " + get_parent_script().transform);
 		var pos = generate_pos ();
 //		Debug.Log ("Pos = " + pos);
-		var gameobj = Instantiate (humanPrefab, pos,
-			Quaternion.identity, parentTransform);
+		var gameobj = HumanController.add_human(pos, get_parent_script().gameObject);
 		gameobj.transform.parent = p_script.transform;
 
 
@@ -83,11 +93,24 @@ public class MetroController : BaseChildObject
 //		Debug.Log ("Pos is " + gameobj.transform.position);
 		gameobj.gameObject.layer = p_script.gameObject.layer;
 		HumanController p_c = gameobj.GetComponent<HumanController> ();
+		p_c.take_subway = false;
 		p_c.Start ();
 	}
 
 	void Awake()  {
 		Invoke ("invoked", down_time);
+	}
+
+	protected virtual void OnTriggerEnter2D (Collider2D other)
+	{
+		if (!can_go_up || ConfigConstexpr.get_instance().has_disaster)
+			return;
+		if (other.CompareTag ("Human")) {
+			HumanController hc = other.GetComponent<HumanController> ();
+			if (hc.take_subway) {
+				other.gameObject.SetActive (false);
+			} 
+		}
 	}
 }
 
