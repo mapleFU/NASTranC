@@ -101,7 +101,7 @@ namespace SimuUtils
 		private const double MAX_B2P_DISTANCE = 0.75;
 		private const double P2P_CONSTEXPR = 1.0;
 		private const double B2P_CONSTEXPR = 2.0;		
-		private const double B2P_PHY_CONST = 25;
+		private const double B2P_PHY_CONST = 1000;
 
 
 		// rigidbody
@@ -109,9 +109,9 @@ namespace SimuUtils
 
 		private double weight;			// 质量-> Rigid2d.mass
 		private double radius;			// 半径
-		private double _normal_exc_speed;	// 预期速度
-		private double _disaster_exc_speed;	// 灾情预期速度
-		private double exc_speed {
+		private float _normal_exc_speed;	// 预期速度
+		private float _disaster_exc_speed;	// 灾情预期速度
+		private float exc_speed {
 			get { 
 				if (in_disaster)
 					return _disaster_exc_speed;
@@ -119,7 +119,7 @@ namespace SimuUtils
 			}
 		}
 
-		private double cur_speed;	// 现有速度
+		private float cur_speed;	// 现有速度
 		private Vector2 cur_vec2;	// 目前运行的向量
 
 		// 获取目标
@@ -186,13 +186,13 @@ namespace SimuUtils
 		private void init_radius()
 		{
 
-			radius = RandomWithBound (reality_radius_lower, reality_radius_upper);
-//			Debug.Log ("radius: " + radius);
-			// init scale with actual value
-			Vector3 current_scale = transform.localScale;
-			current_scale.x = (float)(radius * unity_radius_scale);
-			current_scale.y = (float)(radius * unity_radius_scale);
-			transform.localScale = current_scale;
+//			radius = RandomWithBound (reality_radius_lower, reality_radius_upper);
+////			Debug.Log ("radius: " + radius);
+//			// init scale with actual value
+//			Vector3 current_scale = transform.localScale;
+//			current_scale.x = (float)(radius * unity_radius_scale);
+//			current_scale.y = (float)(radius * unity_radius_scale);
+//			transform.localScale = current_scale;
 		}
 
 		/*
@@ -201,31 +201,34 @@ namespace SimuUtils
 		private void init_speed()
 		{
 //			Debug.Log("Start init speed");
-			_normal_exc_speed = RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
-			_disaster_exc_speed = RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
+			_normal_exc_speed = (float)RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
+			_disaster_exc_speed = (float)RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
 //			Debug.Log ("Init speed expr");
 
-			cur_speed = RandomGussion (reality_inispeed_mean, reality_inispeed_stddev);
-//			Debug.Log ("Init cur speed.");
-			// TODO: 初始化对应速度
-			//		rb.velocity;
-			if (dest == null) {
-				Debug.LogError ("We dont have a dest. And Below are things:");
-				if (father_containers == null) {
-					Debug.LogError ("Even no dad!");
-				} else {
-					init_destine ();
-//					foreach (HumanController human in father_containers.humans) {
-//						Debug.Log (human);
-//					}
-				}
+			cur_speed = (float)RandomGussion (reality_inispeed_mean, reality_inispeed_stddev);
+            //			Debug.Log ("Init cur speed.");
+            // TODO: 初始化对应速度
+            //		rb.velocity;
+            //			if (dest == null) {
+            //				Debug.LogError ("We dont have a dest. And Below are things:");
+            //				if (father_containers == null) {
+            //					Debug.LogError ("Even no dad!");
+            //				} else {
+            //					init_destine ();
+            ////					foreach (HumanController human in father_containers.humans) {
+            ////						Debug.Log (human);
+            ////					}
+            //				}
 
-			}
-			Vector3 dir = dest.transform.position - transform.position;
-			dir.z = 0;
+            //			}
+            Vector3 dir=new Vector3() ;
+            System.Random rd = new System.Random();
+            dir.x = rd.Next(1, 10); 
+            dir.y = rd.Next(1, 10); 
+            dir.z = 0;
 			dir = dir.normalized;
-			rb.velocity = dir * (float)cur_speed;
-
+			//rb.velocity = dir * (float)cur_speed;
+            rb.velocity = dir *0;
 		}
 
 		// 初始化体重，希望能和radius相关
@@ -262,6 +265,8 @@ namespace SimuUtils
 			father_containers.humans.Add (this);
 
 			rb = GetComponent<Rigidbody2D> ();
+            // 防止旋转
+            rb.freezeRotation=true;
 			// 添加自己的对象
 //			humans.Add (this);
 //			HelperScript.change_z (this);
@@ -270,7 +275,7 @@ namespace SimuUtils
 //			Debug.Log("init radius");
 			init_weight ();
 //			Debug.Log ("init weight");
-			init_destine ();
+			//init_destine ();
 //			Debug.Log ("init destine");
 			init_speed ();
 //			Debug.Log ("init speed.");
@@ -287,7 +292,10 @@ namespace SimuUtils
 			Debug.Log (get_parent_script().pos2mapv(this.transform.position));
 			// update speed
 			cur_speed = rb.velocity.magnitude;
-
+            if(cur_speed> exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
+            {
+                rb.velocity = rb.velocity* (1/cur_speed)*exc_speed;
+            }
 			Force 
 //				fhe = count_fhe (),
 				pfe = potential_energy_field(),
@@ -295,15 +303,26 @@ namespace SimuUtils
 				b2p = count_b2p();
 
 			Force all = /*fhe*/ p2p + b2p + pfe;
-			this.rb.AddForce (all);
-
-			// 点击检测
-			if (Input.GetButtonDown("Fire1")) {
+            if (Vector3.Dot(rb.velocity, pfe) < 0)
+            {
+                Vector3 dir = new Vector3();
+                dir.x = pfe.x;
+                dir.y = pfe.y;
+                dir.z = 0;
+                this.rb.velocity = dir * 0;
+            }
+            //Vector3 dir = new Vector3();
+            //dir.x = pfe.x;
+            //dir.y = pfe.y;
+            //dir.z = 0;
+            //dir = dir.normalized;
+            //this.rb.velocity= dir* exc_speed;
+            this.rb.AddForce(all);
+            //点击检测
+            if (Input.GetButtonDown("Fire1")) {
 				// TODO: fill in
 				CameraScript.Instance.onBind(this);
 			}
-
-
 		}
 
 		private Force count_fhe()
@@ -367,7 +386,7 @@ namespace SimuUtils
 //				Debug.Log ("Cur force " + cur_force);
 				// 身体接触力
 				double physic_distance = current_distance;
-				if (physic_distance < 0.3) {
+				if (physic_distance < 1) {
 					Force normal = (float)(-physic_distance * B2P_PHY_CONST) * b2p_direction;
 //					Debug.Log ("normal " + normal + " distance * const = " + (-physic_distance * B2P_PHY_CONST));
 					Vector2 tang_direc = get_tang_direct (b2p_direction, this, controller);
@@ -418,19 +437,18 @@ namespace SimuUtils
 
 
 		// 势能场力常数
-		public float potential_energy_field_constexpr;
+		public static float potential_energy_field_constexpr=100.0f;
 
 		/*
 		 * 根据人的属性得到需要的apf
 		 */ 
 
 		private float[,] find_min_apf(List<float[,]> apf_list, int cur_x, int cur_y) {
-			if (apf_list == null)
-				Debug.Log ("APF list is null.");
 			float[,] min_arr = null;
 			float min_value = 30000;		// 设置一个很大的初值
 			foreach (float[,] arr in apf_list) {
-				if (arr [cur_x, cur_y] < min_value) {
+                float aaa = arr[cur_x, cur_y];
+                if (aaa < min_value&&aaa>=0) {
 					min_value = arr [cur_x, cur_y];
 					min_arr = arr;
 				}
@@ -470,7 +488,7 @@ namespace SimuUtils
 					List<float[,]> search_list;
 
 					// 根据有无app选择对应的list
-					if (has_app) {
+					if (take_subway) {
 						if (ConfigConstexpr.get_instance ().es_is_running)
 							search_list = bkg_script.APF05;
 						else
@@ -484,7 +502,7 @@ namespace SimuUtils
 
 					const float MIN_V = 30.0f;
 					// 找到最小的数组
-					float[,] min_arr = find_min_apf (search_list, cur_x, cur_y);
+					float[,] min_arr = find_min_apf (search_list, cur_y, cur_x);
 					needed_apf = min_arr;
 					// 先直接找最近的出口吧，这个逻辑恨坑的
 					init_destine ();
@@ -546,7 +564,7 @@ namespace SimuUtils
 
 			// in map lambda
 			inmap if_in = (a, b) => {
-				return a < rank && b < length;
+				return a < length && b < rank&&a>=0&&b>=0;
 			};
 
 			Vector2 map_vec2 = bkg_script.pos2mapv (this.transform.position);
@@ -556,16 +574,23 @@ namespace SimuUtils
 
 			int minx=-5, miny=-5;
 			float min_value = 30000;
-			for (int i = x - 2; i <= x + 2; ++i) {
-				for (int j = y - 2; j <= y + 2; ++j) {
-					if (if_in (i, j)) {
-						// 这个点在map中
-						if (map[i, j] < min_value) {
-							minx = i;
-							miny = j;
-							min_value = map [i, j];
-						}
-					}
+            float cur_value = map[y, x];
+            for (int i = y - 3; i <= y + 3; ++i) {
+                for (int j = x - 3; j <= x + 3; ++j) {
+                    if (if_in(i, j))
+                    {
+                        // 这个点在map中
+                        if (map[i, j] >= 0)
+                        {
+                            float bbb = (map[i, j] - cur_value) / Mathf.Sqrt(Mathf.Pow((i - y), 2) + Mathf.Pow((j - x), 2));
+                            if (bbb < min_value)
+                            {
+                                minx = j;
+                                miny = i;
+                                min_value = bbb;
+                            }
+                        }
+                    }
 				}
 			}
 //			if (minx == miny && minx == 30000) {
@@ -573,7 +598,7 @@ namespace SimuUtils
 //				return null;
 //			}
 
-			var force_direc = new Force (minx, miny);
+			var force_direc = new Force (minx-x, y-miny);
 			force_direc.Normalize ();
 
 			// 方向的单位矢量乘以常数
