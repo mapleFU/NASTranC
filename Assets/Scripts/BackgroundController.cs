@@ -78,6 +78,11 @@ namespace SimuUtils {
         private float parent_x;
         private float parent_y;
 
+		// 获得势能场的大小规格
+		public Vector2 get_pf_scale() {
+			return new Vector2 (width / grid_size, height / grid_size);
+		}
+
         // from 0 to start
         public static int layer_num = 0;
         /*

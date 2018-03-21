@@ -280,7 +280,8 @@ namespace SimuUtils
 			init_speed ();
 //			Debug.Log ("init speed.");
 
-			in_disaster = false;
+//			in_disaster = false;
+			in_disaster = true;
 		
 		}
 
@@ -289,7 +290,7 @@ namespace SimuUtils
 		// count force 
 		public void Update () {
 			// DEBUG
-			Debug.Log (get_parent_script().pos2mapv(this.transform.position));
+//			Debug.Log (get_parent_script().pos2mapv(this.transform.position));
 			// update speed
 			cur_speed = rb.velocity.magnitude;
             if(cur_speed> exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
@@ -442,17 +443,41 @@ namespace SimuUtils
 		/*
 		 * 根据人的属性得到需要的apf
 		 */ 
-
+		// 上一次可以的apf
+		private float[,] last_used_apf = null;
 		private float[,] find_min_apf(List<float[,]> apf_list, int cur_x, int cur_y) {
+			// TODO:test and DEBUG in this function
+
+			if (apf_list == null) {
+				Debug.LogError ("May because that apf_list is null.");
+			}
+
 			float[,] min_arr = null;
-			float min_value = 30000;		// 设置一个很大的初值
+			float min_value = 300000;		// 设置一个很大的初值
 			foreach (float[,] arr in apf_list) {
                 float aaa = arr[cur_x, cur_y];
-                if (aaa < min_value&&aaa>=0) {
+				if (aaa < min_value && aaa >= 0) {
 					min_value = arr [cur_x, cur_y];
 					min_arr = arr;
 				}
 			}
+			if (min_arr == null) {
+//				Debug.LogError ("MIN_ARR IS NULL. 无法找到对应的目标。");
+//				if (apf_list == null) {
+//					Debug.LogError ("May because that apf_list is null.");
+//				} else {
+//					
+//					Debug.LogError ("But apf_list is not null with size" + apf_list.Count);
+//					Debug.Log ("Minvalue: " + min_value + " with position: (" + cur_x +", " + cur_y + ")" + " and father scale: " + 
+//						get_parent_script().get_pf_scale());
+//					
+//				}
+				min_arr = last_used_apf;
+			}
+
+			if (min_arr != null)
+				last_used_apf = min_arr;
+			
 			return min_arr;
 		}
 

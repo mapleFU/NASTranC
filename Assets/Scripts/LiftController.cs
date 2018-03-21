@@ -60,20 +60,15 @@ namespace SimuUtils
 //				other.gameObject.SetActive (false);
 				GameObject game_obj = other.gameObject;
 				HumanController script = game_obj.GetComponent<HumanController> ();
-				if (!script.lift_available(this)) {
+
+				if (script.in_disaster && !up_or_down) {
+					// 如果在灾害中并且是一个下楼的楼梯
 					return;
 				}
 
-//				// 每个 cross channel 是等同的。
-//				Debug.Log ("Print eqlist in trigger.This is: " + this);
-//				if (script.used_list != null) {
-//					foreach (LiftController controller in script.used_list) {
-//						Debug.Log (controller);
-//					}
-//				} else {
-//					Debug.Log ("No used list.");
-//				}
-//
+				if (!script.lift_available(this)) {
+					return;
+				}
 
 				if (script == null) {
 					Debug.Log ("Bad Human! Human here don't have script!");
