@@ -14,20 +14,25 @@ public class MetroController : BaseChildObject
 	private float height, width;
 	private  System.Random rd;
     private Vector2 oc_direct;
-
+	private float my_generate_y;	// 生成的y的位置
     public override void Start() {
         base.Start();
         p_script = get_parent_script();
+		if (p_script == null) {
+			Debug.LogError ("We cannot find p_script in it " + gameObject.name);
+		}
         parentTransform = p_script.transform;
         var ymin = p_script.ymin;
 
         if (Mathf.Abs(ymin - transform.position.y) < 0.1f)
         {
-            oc_direct = new Vector2(0, -1);
+            oc_direct = new Vector2(0, -2.8f);
+			my_generate_y = -2.8f;
         }
         else
         {
-            oc_direct = new Vector2(0, 1);
+            oc_direct = new Vector2(0, -0.2f);
+			my_generate_y = -0.2f;
         }
 
         bound = GetComponent<BoxCollider2D>().bounds;
@@ -68,9 +73,9 @@ public class MetroController : BaseChildObject
 	 */
     private Vector3 generate_pos()
     {
-        const float ocrate = 0.1f;
-        Vector2 v2 = new Vector2((float)rd.NextDouble() * width + gameObject.transform.position.x,
-                         (float)rd.NextDouble() * height + gameObject.transform.position.y) + oc_direct * ocrate;
+        const float ocrate = 0.2f;
+		Vector3 v2 = new Vector3 ((float)rd.NextDouble () * width + gameObject.transform.position.x,
+			my_generate_y, 0.41f);
         Vector3 v3 = v2;
         v3.z = -0.41f;
         return v3;
@@ -84,15 +89,13 @@ public class MetroController : BaseChildObject
     private void add_person() {
 //		Debug.Log ("My daddy: " + get_parent_script().transform);
 		var pos = generate_pos ();
-//		Debug.Log ("Pos = " + pos);
-		var gameobj = HumanController.add_human(pos, get_parent_script().gameObject);
+		Debug.Log ("Add Pos = " + pos + " with father " + this.gameObject.name);
+		var gameobj = HumanController.add_human(pos, parentTransform.gameObject);
 		gameobj.transform.parent = p_script.transform;
 
-
-//		Debug.Log ("Add person!");
-//		Debug.Log ("Pos is " + gameobj.transform.position);
 		gameobj.gameObject.layer = p_script.gameObject.layer;
 		HumanController p_c = gameobj.GetComponent<HumanController> ();
+		p_c.transform.parent = parentTransform;
 		p_c.take_subway = false;
 		p_c.Start ();
 	}
@@ -109,6 +112,7 @@ public class MetroController : BaseChildObject
 			HumanController hc = other.GetComponent<HumanController> ();
 			if (hc.take_subway) {
 				other.gameObject.SetActive (false);
+				Debug.Log ("Some one take the subway and go away");
 			} 
 		}
 	}

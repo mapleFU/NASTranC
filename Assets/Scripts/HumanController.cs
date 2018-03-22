@@ -16,9 +16,23 @@ namespace SimuUtils
 	public class HumanController : BaseChildObject {
 
 		public static GameObject add_human(Vector2 pos , GameObject parent) {
-			GameObject instance = Instantiate(Resources.Load("Assets/GamePrefab/LittleHuman", typeof(GameObject)),
+			GameObject instance = Instantiate(Resources.Load("GamePrefab/LittleHuman"),
 				pos, Quaternion.identity, parent.transform) as GameObject;
-			
+			instance.transform.localScale = new Vector3 (0.005f, 0.04f, 1f);
+			instance.tag = "Human";
+//			var colid = instance.GetComponent<BoxCollider2D> ();
+//			colid.isTrigger = true;
+			instance.transform.parent = parent.transform;
+			BackgroundController hc = parent.GetComponent<BackgroundController> ();
+			if (hc == null) {
+				Debug.LogError ("Parent we sent to add_human is null");
+			} else {
+				instance.layer = hc.gameObject.layer;	
+			}
+
+			var cur_pos = instance.transform.position;
+			cur_pos.z = -0.41f;
+			instance.transform.position = cur_pos;
 			return instance;
 		}
 
@@ -295,7 +309,7 @@ namespace SimuUtils
 		// count force 
 		public void Update () {
 			// DEBUG
-			Debug.Log ("My pos: " + transform.position + " and pos in map " + get_parent_script().pos2mapv(transform.position) + " MyLocalScale: " + transform.localScale );
+//			Debug.Log ("My pos: " + transform.position + " and pos in map " + get_parent_script().pos2mapv(transform.position) + " MyLocalScale: " + transform.localScale );
 			// update speed
 			cur_speed = rb.velocity.magnitude;
             if(cur_speed> exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
@@ -464,6 +478,7 @@ namespace SimuUtils
 			} catch (Exception e) {
 				Debug.LogError ("Error pos: " + transform.position + " and mapv"
 					+ get_parent_script().pos2mapv(transform.position) + "cur_x, cur_y" + cur_x + ","+ cur_y);
+				this.gameObject.SetActive (false);
 				throw;
 			}
 
@@ -595,7 +610,7 @@ namespace SimuUtils
 
 			// in map lambda
 			inmap if_in = (a, b) => {
-				return a < length && b < rank&&a>=0&&b>=0;
+				return a < length && b < rank && a>=0 && b>=0;
 			};
 
 			Vector2 map_vec2 = bkg_script.pos2mapv (this.transform.position);

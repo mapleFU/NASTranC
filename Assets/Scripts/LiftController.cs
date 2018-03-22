@@ -86,7 +86,7 @@ namespace SimuUtils
 				// 更改game_obj的父对象
 				// TODO: 搞清楚是不是要多重改变
 				var rotate = other.transform.localRotation;
-//				var localscale = other.transform.localScale;
+				var localscale = other.transform.localScale;
 
 //				lock (atom_lock) 
 				{
@@ -117,8 +117,8 @@ namespace SimuUtils
 					}
 
 
-//					game_obj.transform.parent = to.transform.parent;
-					game_obj.transform.SetParent (to.GetComponent<LiftController>().get_parent_script().transform, false);
+					game_obj.transform.parent = to.transform.parent;
+//					game_obj.transform.SetParent (to.GetComponent<LiftController>().get_parent_script().transform, false);
 
 					to_script.add_person (game_obj);
 
@@ -142,7 +142,7 @@ namespace SimuUtils
 
 
 
-//					script.transform.localScale = localscale;
+					script.transform.localScale = localscale;
 					script.transform.rotation = rotate;
 					HelperScript.change_z (script);
 					Debug.Log ("Change " + other.gameObject.name + " from " + old_parent + " to "+  to_script);
