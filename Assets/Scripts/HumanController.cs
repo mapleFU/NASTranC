@@ -297,7 +297,7 @@ namespace SimuUtils
 			//init_destine ();
 			init_speed ();
 
-			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
+//			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
 			// TODO: 将 in_disaster
 			in_disaster = false;
 //			in_disaster = true;
@@ -332,6 +332,11 @@ namespace SimuUtils
                 this.rb.velocity = dir * 0;
             }
             this.rb.AddForce(all);
+			// DEBUG
+
+			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
+				get_parent_script().gameObject.name);
+
             //点击检测
             if (Input.GetButtonDown("Fire1")) {
 				// TODO: fill in
@@ -397,7 +402,7 @@ namespace SimuUtils
 				var cur_force = (float)(B2P_CONSTEXPR * Math.Exp (-current_distance / 0.2)) * b2p_direction;
 //				Debug.Log ("b2p mentally " + cur_force);
 				f += cur_force;
-//				Debug.Log ("Cur force " + cur_force);
+//				//Debug.Log ("Cur force " + cur_force);
 				// 身体接触力
 				double physic_distance = current_distance;
 				if (physic_distance < 1) {
@@ -479,7 +484,7 @@ namespace SimuUtils
 				Debug.LogError ("Error pos: " + transform.position + " and mapv"
 					+ get_parent_script().pos2mapv(transform.position) + "cur_x, cur_y" + cur_x + ","+ cur_y);
 				this.gameObject.SetActive (false);
-				throw;
+
 			}
 
 			if (min_arr == null) {
@@ -518,15 +523,22 @@ namespace SimuUtils
 						// 有app
 					if (take_subway) {
 						// 要乘车
-						if (ConfigConstexpr.get_instance ().es_is_running)
+						if (ConfigConstexpr.get_instance ().es_is_running) {
 							needed_apf = bkg_script.APF01;
-						else
+							//Debug.Log ("Choose APF01");
+						} else {
 							needed_apf = bkg_script.APF11;
+							//Debug.Log ("Choose APF011");
+						}
 					} else {
-						if (ConfigConstexpr.get_instance ().es_is_running)
+						if (ConfigConstexpr.get_instance ().es_is_running) {
 							needed_apf = bkg_script.APF02;
-						else
+							//Debug.Log ("Choose APF02");
+						} else {
 							needed_apf = bkg_script.APF12;
+							//Debug.Log ("Choose APF12");
+						}
+							
 					}
 
 				} else {
@@ -535,15 +547,23 @@ namespace SimuUtils
 
 					// 根据有无app选择对应的list
 					if (take_subway) {
-						if (ConfigConstexpr.get_instance ().es_is_running)
+						if (ConfigConstexpr.get_instance ().es_is_running) {
 							search_list = bkg_script.APF05;
-						else
+							//Debug.Log ("Choose APF05");
+						} else {
 							search_list = bkg_script.APF15;
+							//Debug.Log ("Choose APF15");
+						}
+ 							
 					} else {
-						if (ConfigConstexpr.get_instance ().es_is_running)
+						if (ConfigConstexpr.get_instance ().es_is_running) {
 							search_list = bkg_script.APF06;
-						else
+							//Debug.Log ("Choose APF06");
+						} else {
 							search_list = bkg_script.APF16;
+							//Debug.Log ("Choose APF16");
+						}
+							
 					}
 
 					const float MIN_V = 30.0f;
@@ -604,13 +624,17 @@ namespace SimuUtils
 			var bkg_script = get_parent_script();
 //			var map = bkg_script.Map;
 			var map = get_apf();
+			if (map == null) {
+				Debug.Log ("We cannot find map in potential_energy_field, get apf");
+			}
 			// get map of size
 			int rank = bkg_script.x;
 			int length = bkg_script.y;
 
 			// in map lambda
 			inmap if_in = (a, b) => {
-				return a < length && b < rank && a>=0 && b>=0;
+				// DEBUG
+				return a < length && b < rank && a >= 0 && b >= 0;
 			};
 
 			Vector2 map_vec2 = bkg_script.pos2mapv (this.transform.position);
@@ -619,12 +643,16 @@ namespace SimuUtils
 
 
 			int minx=-5, miny=-5;
-			float min_value = 30000;
+			float min_value = 300000;
             float cur_value = map[y, x];
             for (int i = y - 3; i <= y + 3; ++i) {
                 for (int j = x - 3; j <= x + 3; ++j) {
                     if (if_in(i, j))
                     {
+						if (i == y && x == j) {
+							// 同一个点...就不要谈了
+							continue;
+						}
                         // 这个点在map中
                         if (map[i, j] >= 0)
                         {
@@ -646,6 +674,14 @@ namespace SimuUtils
 
 			var force_direc = new Force (minx-x, y-miny);
 			force_direc.Normalize ();
+
+//			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
+			if (get_parent_script().gameObject.name.Contains("Stair")) {
+				var fx = force_direc;
+				fx.x = -force_direc.y;
+				fx.y = force_direc.x;
+				force_direc = fx;
+			}
 
 			// 方向的单位矢量乘以常数
 			return force_direc * potential_energy_field_constexpr;

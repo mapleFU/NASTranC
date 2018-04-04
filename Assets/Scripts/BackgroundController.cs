@@ -395,6 +395,7 @@ namespace SimuUtils {
 			if (gridx < 0 || gridy < 0) {
 				Debug.LogError ("pos: " + pos + " mapv : " + mapv + " xmin: " + xmin + " ymin " + ymin + " y:" + y + 
 					" father is: " + this.gameObject.name);
+				
 			}
 
 			return mapv;

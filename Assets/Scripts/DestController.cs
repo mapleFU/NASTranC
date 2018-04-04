@@ -33,6 +33,9 @@ namespace SimuUtils
 		// 可以设置的
 		public int person_per_wave = 2;	// 每一波添加的人，可以设置成相关的别的常数
 		public float add_time = 4;		// 时间相关的常数
+		/*
+		 * 
+		 */ 
 		// 添加人
 		void dest_add_person() {
 			Debug.Log ("召唤准备！");
@@ -43,21 +46,22 @@ namespace SimuUtils
 				}
 				newman.layer = gameObject.layer;
 				HumanController new_script = newman.GetComponent<HumanController> ();
+			
 				new_script.take_subway = true;
-				new_script.Start ();
+
 			}
 				
 			Invoke ("dest_add_person", add_time);
 		}
 
-		void Awake()  {
+		virtual protected void Awake()  {
+			// TODO: DEBUG and fill this
 //			Invoke ("dest_add_person", add_time);
 		}
 
 		// if find "human" with tag
 		void OnTriggerEnter2D (Collider2D other)
 		{
-//			Debug.Log("Human trigger.");
 			if (other.gameObject.CompareTag ("Human"))
 			{
 				

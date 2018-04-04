@@ -57,7 +57,8 @@ public class MetroController : BaseChildObject
 		// 可以上车了
 		can_go_up = true;
 		Invoke ("invoked", down_time);
-		Invoke ("set_cannot_goup", wait_time);
+		// 取消go up
+//		Invoke ("set_cannot_goup", wait_time + down_time);
 		for (int i = 0; i < per_wave; ++i)
 			add_person ();
 		// 延时执行
@@ -66,6 +67,7 @@ public class MetroController : BaseChildObject
 
 	private void set_cannot_goup() {
 		can_go_up = false;
+		Invoke ("set_cannot_goup", wait_time + down_time);
 	}
 
     /*
@@ -91,7 +93,7 @@ public class MetroController : BaseChildObject
 		var pos = generate_pos ();
 		Debug.Log ("Add Pos = " + pos + " with father " + this.gameObject.name);
 		var gameobj = HumanController.add_human(pos, parentTransform.gameObject);
-		gameobj.transform.parent = p_script.transform;
+		gameobj.transform.parent = p_script.transform;	// reset father.
 
 		gameobj.gameObject.layer = p_script.gameObject.layer;
 		HumanController p_c = gameobj.GetComponent<HumanController> ();
@@ -101,7 +103,9 @@ public class MetroController : BaseChildObject
 	}
 
 	void Awake()  {
-		Invoke ("invoked", down_time);
+		//TODO: DEBUG!!!!
+//		Invoke ("invoked", down_time);
+//		Invoke ("set_cannot_goup", wait_time + down_time);
 	}
 
 	protected virtual void OnTriggerEnter2D (Collider2D other)

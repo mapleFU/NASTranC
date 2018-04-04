@@ -51,6 +51,8 @@ namespace SimuUtils
 
 		}
 
+		// DO nothing in awake!!!!!
+		public void Awake() {}
 
 //		private static Interlocked atom_lock = new Interlocked();
 		protected virtual void OnTriggerEnter2D (Collider2D other)
@@ -118,7 +120,6 @@ namespace SimuUtils
 
 
 					game_obj.transform.parent = to.transform.parent;
-//					game_obj.transform.SetParent (to.GetComponent<LiftController>().get_parent_script().transform, false);
 
 					to_script.add_person (game_obj);
 
