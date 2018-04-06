@@ -45,9 +45,10 @@ public class MetroController : BaseChildObject
 	 * 地铁站会有人下车
 	 * 在这里填写下车的逻辑
 	 */
-	public float wait_time;		// 每波车等待的事件
-    public float down_time;		// 允许上车时间间隔
-	public int per_wave;		// 每一波的人
+	private float wait_time = 10.0f;		// 每波车等待的事件
+    private float down_time = 20.0f;		// 允许上车时间间隔
+	private int per_wave = 3;		// 每一波的人
+
 	private bool can_go_up;		// 可以上车
 
 	/*
@@ -58,7 +59,7 @@ public class MetroController : BaseChildObject
 		can_go_up = true;
 		Invoke ("invoked", down_time);
 		// 取消go up
-//		Invoke ("set_cannot_goup", wait_time + down_time);
+		Invoke ("set_cannot_goup", wait_time);
 		for (int i = 0; i < per_wave; ++i)
 			add_person ();
 		// 延时执行
@@ -67,7 +68,6 @@ public class MetroController : BaseChildObject
 
 	private void set_cannot_goup() {
 		can_go_up = false;
-		Invoke ("set_cannot_goup", wait_time + down_time);
 	}
 
     /*
@@ -104,7 +104,7 @@ public class MetroController : BaseChildObject
 
 	void Awake()  {
 		//TODO: DEBUG!!!!
-//		Invoke ("invoked", down_time);
+		Invoke ("invoked", down_time);
 //		Invoke ("set_cannot_goup", wait_time + down_time);
 	}
 

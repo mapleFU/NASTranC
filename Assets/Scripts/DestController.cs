@@ -31,8 +31,8 @@ namespace SimuUtils
 		}
 
 		// 可以设置的
-		public int person_per_wave = 2;	// 每一波添加的人，可以设置成相关的别的常数
-		public float add_time = 4;		// 时间相关的常数
+		private int person_per_wave = 2;	// 每一波添加的人，可以设置成相关的别的常数
+		private float add_time = 4;		// 时间相关的常数
 		/*
 		 * 
 		 */ 
@@ -56,7 +56,7 @@ namespace SimuUtils
 
 		virtual protected void Awake()  {
 			// TODO: DEBUG and fill this
-//			Invoke ("dest_add_person", add_time);
+			Invoke ("dest_add_person", add_time);
 		}
 
 		// if find "human" with tag

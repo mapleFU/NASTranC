@@ -223,6 +223,7 @@ namespace SimuUtils
 		 */ 
 		private void init_speed()
 		{
+			
 //			Debug.Log("Start init speed");
 			_normal_exc_speed = (float)RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
 			_disaster_exc_speed = (float)RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
@@ -320,7 +321,7 @@ namespace SimuUtils
 //				fhe = count_fhe (),
 				pfe = potential_energy_field(),
 				p2p = count_p2p(),
-				b2p = count_b2p();
+				b2p = count_b2p() * 0.01f;
 
 			Force all = /*fhe*/ p2p + b2p + pfe;
             if (Vector3.Dot(rb.velocity, pfe) < 0)
@@ -525,18 +526,18 @@ namespace SimuUtils
 						// 要乘车
 						if (ConfigConstexpr.get_instance ().es_is_running) {
 							needed_apf = bkg_script.APF01;
-							//Debug.Log ("Choose APF01");
+							Debug.Log ("Choose APF01");
 						} else {
 							needed_apf = bkg_script.APF11;
-							//Debug.Log ("Choose APF011");
+							Debug.Log ("Choose APF11");
 						}
 					} else {
 						if (ConfigConstexpr.get_instance ().es_is_running) {
 							needed_apf = bkg_script.APF02;
-							//Debug.Log ("Choose APF02");
+							Debug.Log ("Choose APF02");
 						} else {
 							needed_apf = bkg_script.APF12;
-							//Debug.Log ("Choose APF12");
+							Debug.Log ("Choose APF12");
 						}
 							
 					}
@@ -549,19 +550,19 @@ namespace SimuUtils
 					if (take_subway) {
 						if (ConfigConstexpr.get_instance ().es_is_running) {
 							search_list = bkg_script.APF05;
-							//Debug.Log ("Choose APF05");
+							Debug.Log ("Choose APF05");
 						} else {
 							search_list = bkg_script.APF15;
-							//Debug.Log ("Choose APF15");
+							Debug.Log ("Choose APF15");
 						}
  							
 					} else {
 						if (ConfigConstexpr.get_instance ().es_is_running) {
 							search_list = bkg_script.APF06;
-							//Debug.Log ("Choose APF06");
+							Debug.Log ("Choose APF06");
 						} else {
 							search_list = bkg_script.APF16;
-							//Debug.Log ("Choose APF16");
+							Debug.Log ("Choose APF16");
 						}
 							
 					}
@@ -618,7 +619,7 @@ namespace SimuUtils
 			return needed_apf;
 		}
 
-
+		private Vector2 last_stair_map2v;
 		private delegate bool inmap(int x, int y);
 		private Force potential_energy_field() {
 			var bkg_script = get_parent_script();
@@ -637,7 +638,20 @@ namespace SimuUtils
 				return a < length && b < rank && a >= 0 && b >= 0;
 			};
 
-			Vector2 map_vec2 = bkg_script.pos2mapv (this.transform.position);
+			Vector2 map_vec2;
+			try {
+				map_vec2 = bkg_script.pos2mapv (this.transform.position);	
+			} catch(Exception e) {
+				if (bkg_script.gameObject.name.Contains ("Stair") && last_stair_map2v != null) {
+					map_vec2 = last_stair_map2v;
+				} else {
+					throw e;
+				}
+			}
+			last_stair_map2v = map_vec2;
+			// DEBUG
+
+
 			int x = (int)map_vec2.x;
 			int y = (int)map_vec2.y;
 
@@ -675,13 +689,13 @@ namespace SimuUtils
 			var force_direc = new Force (minx-x, y-miny);
 			force_direc.Normalize ();
 
-//			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
-			if (get_parent_script().gameObject.name.Contains("Stair")) {
-				var fx = force_direc;
-				fx.x = -force_direc.y;
-				fx.y = force_direc.x;
-				force_direc = fx;
-			}
+////			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
+//			if (get_parent_script().gameObject.name.Contains("Stair")) {
+//				var fx = force_direc;
+//				fx.x = -force_direc.y;
+//				fx.y = force_direc.x;
+//				force_direc = fx;
+//			}
 
 			// 方向的单位矢量乘以常数
 			return force_direc * potential_energy_field_constexpr;
