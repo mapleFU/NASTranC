@@ -387,7 +387,7 @@ namespace SimuUtils {
         /*
 		 * 地图坐标转化为整数坐标
 		 */
-        public Vector2 pos2mapv(Vector2 pos) {
+		public Vector2 pos2mapv(Vector2 pos, GameObject game_obj=null) {
 			float gridx = (float)Math.Ceiling(Math.Abs((pos.x - xmin) / grid_size));
 			// TODO
 			float gridy = y - (float)Math.Ceiling(Math.Abs((pos.y - ymin)/ grid_size));

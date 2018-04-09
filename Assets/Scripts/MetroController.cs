@@ -108,8 +108,9 @@ public class MetroController : BaseChildObject
 //		Invoke ("set_cannot_goup", wait_time + down_time);
 	}
 
-	protected virtual void OnTriggerEnter2D (Collider2D other)
+	public void OnTriggerEnter2D (Collider2D other)
 	{
+		
 		if (!can_go_up || ConfigConstexpr.get_instance().has_disaster)
 			return;
 		if (other.CompareTag ("Human")) {
@@ -119,6 +120,10 @@ public class MetroController : BaseChildObject
 				Debug.Log ("Some one take the subway and go away");
 			} 
 		}
+	}
+
+	void OnTriggerStay2D( Collider2D other) {
+		OnTriggerEnter2D (other);
 	}
 }
 

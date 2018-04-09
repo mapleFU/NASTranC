@@ -5,7 +5,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine;
+using UnityEngine.UI;
+
 using System.Collections;
 
 using SimuUtils;
@@ -33,6 +34,9 @@ public class CameraScript : MonoBehaviour {
 	void Start () {
 		cam = this.gameObject.GetComponent<Camera> ();
 
+		foreach (Button button in GetComponents<Button>()) {
+			button.gameObject.layer = watched_player.gameObject.layer;
+		}
 		if (watched_player) {
 			var script = watched_player.GetComponent<HumanController> ();
 			if (script)
@@ -90,6 +94,9 @@ public class CameraScript : MonoBehaviour {
 		watched_player = humanController.gameObject.transform;
 		// using it to bind and change layer.
 		cam.gameObject.layer = watched_player.gameObject.layer;
+		foreach (Button button in GetComponents<Button>()) {
+			button.gameObject.layer = watched_player.gameObject.layer;
+		}
 		relayer_child_camera();
 	}
 

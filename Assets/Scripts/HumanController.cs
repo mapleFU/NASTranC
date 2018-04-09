@@ -42,6 +42,9 @@ namespace SimuUtils
 		// 进入灾害模式
 		public void to_disaster_mode () {
 			in_disaster = true;	
+			SpriteRenderer sr = GetComponent<SpriteRenderer> ();
+			sr.color = new Color (1.0f, 0, 0);
+
 		}
 
 		// 人出现的目标点
@@ -301,7 +304,6 @@ namespace SimuUtils
 //			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
 			// TODO: 将 in_disaster
 			in_disaster = false;
-//			in_disaster = true;
 		
 		}
 
@@ -318,10 +320,9 @@ namespace SimuUtils
                 rb.velocity = rb.velocity* (1/cur_speed)*exc_speed;
             }
 			Force 
-//				fhe = count_fhe (),
-				pfe = potential_energy_field(),
-				p2p = count_p2p(),
-				b2p = count_b2p() * 0.01f;
+				pfe = potential_energy_field() * 0.5f,
+				p2p = count_p2p() * 2,
+				b2p = count_b2p() * 0.05f;
 
 			Force all = /*fhe*/ p2p + b2p + pfe;
             if (Vector3.Dot(rb.velocity, pfe) < 0)
