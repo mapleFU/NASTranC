@@ -118,6 +118,7 @@ namespace SimuUtils
 						script.used_list = un_allowed_lifts;
 					}
 
+					Rigidbody2D rb = GetComponent<Rigidbody2D> ();
 
 					game_obj.transform.parent = to.transform.parent;
 

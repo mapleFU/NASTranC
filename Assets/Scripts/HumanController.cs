@@ -20,8 +20,8 @@ namespace SimuUtils
 				pos, Quaternion.identity, parent.transform) as GameObject;
 			instance.transform.localScale = new Vector3 (0.005f, 0.04f, 1f);
 			instance.tag = "Human";
-//			var colid = instance.GetComponent<BoxCollider2D> ();
-//			colid.isTrigger = true;
+			//			var colid = instance.GetComponent<BoxCollider2D> ();
+			//			colid.isTrigger = true;
 			instance.transform.parent = parent.transform;
 			BackgroundController hc = parent.GetComponent<BackgroundController> ();
 			if (hc == null) {
@@ -56,7 +56,7 @@ namespace SimuUtils
 
 		private ChildObjects father_containers;
 		// 使用过的lift
-//		public LiftController used_lift = null;
+		//		public LiftController used_lift = null;
 		public HashSet<LiftController> used_list;
 
 		/*
@@ -96,18 +96,19 @@ namespace SimuUtils
 
 		// 社会力作用最大范围，暂定2m
 		private const double reality_max_force_range = 2.0f;
-//		public double reality_max_force_range;
+		//		public double reality_max_force_range;
 
 		// 体重 
 		private const double reality_weight_lower = 44;
 		private const double reality_weight_upper = 70;
-//		public double reality_weight_lower;
-//		public double reality_weight_upper;
+		//		public double reality_weight_lower;
+		//		public double reality_weight_upper;
 
+		private const double mutirate = 0.5f;
 		// 正常情况下的 初始化速度和期望速度 
-		private const double reality_excspeed_mean = 1.26f;
+		private const double reality_excspeed_mean = 1.26f * mutirate;
 		private const double reality_excspeed_stddev = 0.36f;
-		private const double disaster_excspeed_mean = 1.56f;
+		private const double disaster_excspeed_mean = 1.56f * mutirate;
 		private const double disaster_excspeed_stddev = 0.16f;
 
 
@@ -116,13 +117,13 @@ namespace SimuUtils
 		private const double reality_inispeed_stddev = 0.2f;
 		private const double disaster_inispeed_mean = 1.16f;
 		private const double disaster_inispeed_stddev = 0.2f;
-//		public double reality_inispeed_mean;
-//		public double reality_inispeed_stddev;
+		//		public double reality_inispeed_mean;
+		//		public double reality_inispeed_stddev;
 
 
 		// running constexpr 
 		private const double TIME_EXPR = 0.5;
-		private const double MAX_COUNT_DISTANCE = 1.1;
+		private const double MAX_COUNT_DISTANCE = 0.5; 		// max_count_dis
 		private const double MAX_MENTALLY_DISTANCE = 1.6;
 		private const double MAX_B2P_DISTANCE = 0.75;
 		private const double P2P_CONSTEXPR = 1.0;
@@ -149,7 +150,7 @@ namespace SimuUtils
 		private Vector2 cur_vec2;	// 目前运行的向量
 
 		// 获取目标
-//		private static GameObject[] all_dests = null;
+		//		private static GameObject[] all_dests = null;
 		private GameObject dest;
 
 		// 目前的坐标，希望能够根据网络获得，不过这里通过随机生成(或者通过)
@@ -169,27 +170,27 @@ namespace SimuUtils
 		{
 			init_destine ();
 			var to_dest = dest.GetComponent<DestController> ();
-//			Debug.Log ("THe new dest is " + to_dest);
+			//			Debug.Log ("THe new dest is " + to_dest);
 		}
-			
+
 		// Use this for initialization
 		// 初始化目的地, 本算法选取的是最小的
 		private void init_destine()
 		{
-//			if (all_dests == null) {
-//				
-////				all_dests = father_containers.dests;
-//				all_dests = GameObject.FindGameObjectsWithTag ("Dest");
-//			}
+			//			if (all_dests == null) {
+			//				
+			////				all_dests = father_containers.dests;
+			//				all_dests = GameObject.FindGameObjectsWithTag ("Dest");
+			//			}
 			GameObject min_dst = null;
 			float min_length = float.MaxValue;
-//			this.transform.gameObject
+			//			this.transform.gameObject
 			// need to change this
 			int cnt = 0;
 			foreach (MonoBehaviour behaviour in father_containers.dests) {
 				++cnt;
-//				if (behaviour == used_lift) 
-//					continue;
+				//				if (behaviour == used_lift) 
+				//					continue;
 				if (behaviour.GetType() == typeof(LiftController) && !lift_available (behaviour as LiftController)) {
 					continue;
 				}
@@ -200,10 +201,10 @@ namespace SimuUtils
 					min_dst = dst;
 				}
 			}
-//			Debug.Log ("There are " + cnt + " dests in this layer.");
+			//			Debug.Log ("There are " + cnt + " dests in this layer.");
 			// init dest
 			dest = min_dst;
-//			Debug.Log ("Now " + ToString() +  " dest is " + dest);
+			//			Debug.Log ("Now " + ToString() +  " dest is " + dest);
 		}
 
 		/*
@@ -212,13 +213,13 @@ namespace SimuUtils
 		private void init_radius()
 		{
 
-//			radius = RandomWithBound (reality_radius_lower, reality_radius_upper);
-////			Debug.Log ("radius: " + radius);
-//			// init scale with actual value
-//			Vector3 current_scale = transform.localScale;
-//			current_scale.x = (float)(radius * unity_radius_scale);
-//			current_scale.y = (float)(radius * unity_radius_scale);
-//			transform.localScale = current_scale;
+			//			radius = RandomWithBound (reality_radius_lower, reality_radius_upper);
+			////			Debug.Log ("radius: " + radius);
+			//			// init scale with actual value
+			//			Vector3 current_scale = transform.localScale;
+			//			current_scale.x = (float)(radius * unity_radius_scale);
+			//			current_scale.y = (float)(radius * unity_radius_scale);
+			//			transform.localScale = current_scale;
 		}
 
 		/*
@@ -226,36 +227,36 @@ namespace SimuUtils
 		 */ 
 		private void init_speed()
 		{
-			
-//			Debug.Log("Start init speed");
+
+			//			Debug.Log("Start init speed");
 			_normal_exc_speed = (float)RandomGussion (reality_excspeed_mean, reality_excspeed_stddev);
 			_disaster_exc_speed = (float)RandomGussion (disaster_excspeed_mean, disaster_inispeed_stddev);
-//			Debug.Log ("Init speed expr");
+			//			Debug.Log ("Init speed expr");
 
 			cur_speed = (float)RandomGussion (reality_inispeed_mean, reality_inispeed_stddev);
-            //			Debug.Log ("Init cur speed.");
-            // TODO: 初始化对应速度
-            //		rb.velocity;
-            //			if (dest == null) {
-            //				Debug.LogError ("We dont have a dest. And Below are things:");
-            //				if (father_containers == null) {
-            //					Debug.LogError ("Even no dad!");
-            //				} else {
-            //					init_destine ();
-            ////					foreach (HumanController human in father_containers.humans) {
-            ////						Debug.Log (human);
-            ////					}
-            //				}
+			//			Debug.Log ("Init cur speed.");
+			// TODO: 初始化对应速度
+			//		rb.velocity;
+			//			if (dest == null) {
+			//				Debug.LogError ("We dont have a dest. And Below are things:");
+			//				if (father_containers == null) {
+			//					Debug.LogError ("Even no dad!");
+			//				} else {
+			//					init_destine ();
+			////					foreach (HumanController human in father_containers.humans) {
+			////						Debug.Log (human);
+			////					}
+			//				}
 
-            //			}
-            Vector3 dir=new Vector3() ;
-            System.Random rd = new System.Random();
-            dir.x = rd.Next(1, 10); 
-            dir.y = rd.Next(1, 10); 
-            dir.z = 0;
+			//			}
+			Vector3 dir=new Vector3() ;
+			System.Random rd = new System.Random();
+			dir.x = rd.Next(1, 10); 
+			dir.y = rd.Next(1, 10); 
+			dir.z = 0;
 			dir = dir.normalized;
 			//rb.velocity = dir * (float)cur_speed;
-            rb.velocity = dir *0;
+			rb.velocity = dir *0;
 		}
 
 		// 初始化体重，希望能和radius相关
@@ -283,17 +284,18 @@ namespace SimuUtils
 		/*
 		 * 脚本初始化  
 		 */ 
+		private Force last_pfe;
 		public override void Start () {
 			// to myself first.
-//			Debug.Log("Human want's to start.");
+			//			Debug.Log("Human want's to start.");
 			var daddy = get_parent_script();
-//			Debug.Log ("Human's daddy :" + daddy.gameObject);
+			//			Debug.Log ("Human's daddy :" + daddy.gameObject);
 			father_containers = daddy.childObjects;
 			father_containers.humans.Add (this);
 
 			rb = GetComponent<Rigidbody2D> ();
-            // 防止旋转
-            rb.freezeRotation=true;
+			// 防止旋转
+			rb.freezeRotation=true;
 			// 添加自己的对象
 
 			init_radius ();
@@ -301,46 +303,52 @@ namespace SimuUtils
 			//init_destine ();
 			init_speed ();
 
-//			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
+			//			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
 			// TODO: 将 in_disaster
 			in_disaster = false;
-		
+
 		}
 
 		// Update is called once per frame
 
 		// count force 
+		private float K_CONST = 2.0f;
 		public void Update () {
 			// DEBUG
-//			Debug.Log ("My pos: " + transform.position + " and pos in map " + get_parent_script().pos2mapv(transform.position) + " MyLocalScale: " + transform.localScale );
+
 			// update speed
 			cur_speed = rb.velocity.magnitude;
-            if(cur_speed> exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
-            {
-                rb.velocity = rb.velocity* (1/cur_speed)*exc_speed;
-            }
+			if(cur_speed >= exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
+			{
+				rb.velocity = rb.velocity* (1/cur_speed)*exc_speed;
+			}
 			Force 
-				pfe = potential_energy_field() * 0.5f,
-				p2p = count_p2p() * 2,
-				b2p = count_b2p() * 0.05f;
+			pfe = potential_energy_field () * 0.5f;
+			last_pfe = pfe;
+			Force
+			p2p = count_p2p() * 2,
+			b2p = count_b2p() * 0.05f;
 
+			p2p += 3.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
 			Force all = /*fhe*/ p2p + b2p + pfe;
-            if (Vector3.Dot(rb.velocity, pfe) < 0)
-            {
-                Vector3 dir = new Vector3();
-                dir.x = pfe.x;
-                dir.y = pfe.y;
-                dir.z = 0;
-                this.rb.velocity = dir * 0;
-            }
-            this.rb.AddForce(all);
+			all += Vector2.Angle (all, rb.velocity) * K_CONST * all.normalized;
+
+			//            if (Vector3.Dot(rb.velocity, pfe) < 0)
+			//            {
+			//                Vector3 dir = new Vector3();
+			//                dir.x = pfe.x;
+			//                dir.y = pfe.y;
+			//                dir.z = 0;
+			//                this.rb.velocity = dir * 0;
+			//            }
+			this.rb.AddForce(all);
 			// DEBUG
 
 			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
 				get_parent_script().gameObject.name);
 
-            //点击检测
-            if (Input.GetButtonDown("Fire1")) {
+			//点击检测
+			if (Input.GetButtonDown("Fire1")) {
 				// TODO: fill in
 				CameraScript.Instance.onBind(this);
 			}
@@ -362,6 +370,8 @@ namespace SimuUtils
 			return new Force(0, 0);
 		}
 
+		private double LOWER_P2P_DELTA_LENGTH = 0.5;
+		private float P2P_K_CONST = 5.0f;
 		private Force aux_mentally_p2p()
 		{
 			Force mental_force = new Force(0, 0);
@@ -377,10 +387,16 @@ namespace SimuUtils
 				if (distance >= MAX_COUNT_DISTANCE) {
 					continue;
 				}
-				mental_force += (float)(P2P_CONSTEXPR * Math.Exp ((-Vector3.Distance(this.transform.position, player.transform.position) - this.radius - player.radius) / MAX_MENTALLY_DISTANCE))
+
+				Force cur_f = (float)(P2P_CONSTEXPR * Math.Exp ((-Vector3.Distance(this.transform.position, player.transform.position) - this.radius - player.radius) / MAX_MENTALLY_DISTANCE))
 					* get_direction_to_dest ();
+				if (distance <= LOWER_P2P_DELTA_LENGTH) {
+					// 小于距离
+					cur_f += Vector2.Angle(player.rb.velocity, this.rb.velocity) * P2P_K_CONST * cur_f.normalized;
+				}
+				mental_force += cur_f;
 			}
-//			Debug.Log (humans + " human in this layer.");
+			//			Debug.Log (humans + " human in this layer.");
 			return mental_force;
 		}
 
@@ -390,41 +406,41 @@ namespace SimuUtils
 		{
 			Force f = new Force (0, 0);
 
-//			int blocks = 0;
+			//			int blocks = 0;
 			foreach (BlockController controller in father_containers.blocks) {
-//				++blocks;
+				//				++blocks;
 				double current_distance = controller.get_distance_to_human (this) - this.radius;
-			
-				if (current_distance >= 2)
+
+				if (current_distance >= 0.2)
 					continue;
 				Vector2 closest_point = controller.get_closest_point (this);
 				// Still this way...?
 				Vector2 b2p_direction = ((Vector2)this.transform.position - closest_point).normalized;
 				// 心理接触力 修正
 				var cur_force = (float)(B2P_CONSTEXPR * Math.Exp (-current_distance / 0.2)) * b2p_direction;
-//				Debug.Log ("b2p mentally " + cur_force);
+				//				Debug.Log ("b2p mentally " + cur_force);
 				f += cur_force;
-//				//Debug.Log ("Cur force " + cur_force);
+				//				//Debug.Log ("Cur force " + cur_force);
 				// 身体接触力
 				double physic_distance = current_distance;
-				if (physic_distance < 1) {
+				if (physic_distance < 0.01) {
 					Force normal = (float)(-physic_distance * B2P_PHY_CONST) * b2p_direction;
-//					Debug.Log ("normal " + normal + " distance * const = " + (-physic_distance * B2P_PHY_CONST));
+					//					Debug.Log ("normal " + normal + " distance * const = " + (-physic_distance * B2P_PHY_CONST));
 					Vector2 tang_direc = get_tang_direct (b2p_direction, this, controller);
 					Force tangent = tang_direc * VectorMultiply (tang_direc, this.Current_velocity) * 20.0f * (float)current_distance;
-//					Debug.Log ("b2p en " + normal);
-//					Debug.Log ("Tang " + tangent);
-//					Debug.Log ("b2p et " + tang_direc);
+					//					Debug.Log ("b2p en " + normal);
+					//					Debug.Log ("Tang " + tangent);
+					//					Debug.Log ("b2p et " + tang_direc);
 					f += (normal + tangent);
 				}
 
 			}
 
-//			// DEBUG
-//			if (!used) {
-//				Debug.Log ("There are " + blocks + "blocks.");
-////				used = true;
-//			}
+			//			// DEBUG
+			//			if (!used) {
+			//				Debug.Log ("There are " + blocks + "blocks.");
+			////				used = true;
+			//			}
 
 			return f;
 		}
@@ -490,22 +506,22 @@ namespace SimuUtils
 			}
 
 			if (min_arr == null) {
-//				Debug.LogError ("MIN_ARR IS NULL. 无法找到对应的目标。");
-//				if (apf_list == null) {
-//					Debug.LogError ("May because that apf_list is null.");
-//				} else {
-//					
-//					Debug.LogError ("But apf_list is not null with size" + apf_list.Count);
-//					Debug.Log ("Minvalue: " + min_value + " with position: (" + cur_x +", " + cur_y + ")" + " and father scale: " + 
-//						get_parent_script().get_pf_scale());
-//					
-//				}
+				//				Debug.LogError ("MIN_ARR IS NULL. 无法找到对应的目标。");
+				//				if (apf_list == null) {
+				//					Debug.LogError ("May because that apf_list is null.");
+				//				} else {
+				//					
+				//					Debug.LogError ("But apf_list is not null with size" + apf_list.Count);
+				//					Debug.Log ("Minvalue: " + min_value + " with position: (" + cur_x +", " + cur_y + ")" + " and father scale: " + 
+				//						get_parent_script().get_pf_scale());
+				//					
+				//				}
 				min_arr = last_used_apf;
 			}
 
 			if (min_arr != null)
 				last_used_apf = min_arr;
-			
+
 			return min_arr;
 		}
 
@@ -520,9 +536,9 @@ namespace SimuUtils
 
 			if (!bkg_script.on_stair_or_not ()) {
 				// 在楼层上
-					// 楼梯扶梯可用
+				// 楼梯扶梯可用
 				if (has_app) {
-						// 有app
+					// 有app
 					if (take_subway) {
 						// 要乘车
 						if (ConfigConstexpr.get_instance ().es_is_running) {
@@ -540,7 +556,7 @@ namespace SimuUtils
 							needed_apf = bkg_script.APF12;
 							Debug.Log ("Choose APF12");
 						}
-							
+
 					}
 
 				} else {
@@ -556,7 +572,7 @@ namespace SimuUtils
 							search_list = bkg_script.APF15;
 							Debug.Log ("Choose APF15");
 						}
- 							
+
 					} else {
 						if (ConfigConstexpr.get_instance ().es_is_running) {
 							search_list = bkg_script.APF06;
@@ -565,7 +581,7 @@ namespace SimuUtils
 							search_list = bkg_script.APF16;
 							Debug.Log ("Choose APF16");
 						}
-							
+
 					}
 
 					const float MIN_V = 30.0f;
@@ -624,7 +640,7 @@ namespace SimuUtils
 		private delegate bool inmap(int x, int y);
 		private Force potential_energy_field() {
 			var bkg_script = get_parent_script();
-//			var map = bkg_script.Map;
+			//			var map = bkg_script.Map;
 			var map = get_apf();
 			if (map == null) {
 				Debug.Log ("We cannot find map in potential_energy_field, get apf");
@@ -659,44 +675,44 @@ namespace SimuUtils
 
 			int minx=-5, miny=-5;
 			float min_value = 300000;
-            float cur_value = map[y, x];
-            for (int i = y - 3; i <= y + 3; ++i) {
-                for (int j = x - 3; j <= x + 3; ++j) {
-                    if (if_in(i, j))
-                    {
+			float cur_value = map[y, x];
+			for (int i = y - 3; i <= y + 3; ++i) {
+				for (int j = x - 3; j <= x + 3; ++j) {
+					if (if_in(i, j))
+					{
 						if (i == y && x == j) {
 							// 同一个点...就不要谈了
 							continue;
 						}
-                        // 这个点在map中
-                        if (map[i, j] >= 0)
-                        {
-                            float bbb = (map[i, j] - cur_value) / Mathf.Sqrt(Mathf.Pow((i - y), 2) + Mathf.Pow((j - x), 2));
-                            if (bbb < min_value)
-                            {
-                                minx = j;
-                                miny = i;
-                                min_value = bbb;
-                            }
-                        }
-                    }
+						// 这个点在map中
+						if (map[i, j] >= 0)
+						{
+							float bbb = (map[i, j] - cur_value) / Mathf.Sqrt(Mathf.Pow((i - y), 2) + Mathf.Pow((j - x), 2));
+							if (bbb < min_value)
+							{
+								minx = j;
+								miny = i;
+								min_value = bbb;
+							}
+						}
+					}
 				}
 			}
-//			if (minx == miny && minx == 30000) {
-//				// 旁边都是墙，我也不知道怎么走
-//				return null;
-//			}
+			//			if (minx == miny && minx == 30000) {
+			//				// 旁边都是墙，我也不知道怎么走
+			//				return null;
+			//			}
 
 			var force_direc = new Force (minx-x, y-miny);
 			force_direc.Normalize ();
 
-////			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
-//			if (get_parent_script().gameObject.name.Contains("Stair")) {
-//				var fx = force_direc;
-//				fx.x = -force_direc.y;
-//				fx.y = force_direc.x;
-//				force_direc = fx;
-//			}
+			////			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
+			//			if (get_parent_script().gameObject.name.Contains("Stair")) {
+			//				var fx = force_direc;
+			//				fx.x = -force_direc.y;
+			//				fx.y = force_direc.x;
+			//				force_direc = fx;
+			//			}
 
 			// 方向的单位矢量乘以常数
 			return force_direc * potential_energy_field_constexpr;
@@ -718,7 +734,7 @@ namespace SimuUtils
 					v1.x = -v1.x;
 					v1.y = -v1.y;
 				}
-//				Debug.Log (v1);
+				//				Debug.Log (v1);
 				rb2.velocity = (float)this.exc_speed * v1;
 			} 
 			else if (other.gameObject.CompareTag ("Dest")) {

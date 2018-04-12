@@ -89,6 +89,9 @@ public class MetroController : BaseChildObject
 	 * 某人下车
 	 */
     private void add_person() {
+		if (!ConfigConstexpr.human_addable ()) {
+			return;
+		}
 //		Debug.Log ("My daddy: " + get_parent_script().transform);
 		var pos = generate_pos ();
 		Debug.Log ("Add Pos = " + pos + " with father " + this.gameObject.name);

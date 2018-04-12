@@ -38,8 +38,14 @@ namespace SimuUtils
 		 */ 
 		// 添加人
 		void dest_add_person() {
+			// 如果是不可以加人的状态，那么什么都不会发生
+
 			Debug.Log ("召唤准备！");
 			for (int i = 0; i < person_per_wave; ++i) {
+				if (!ConfigConstexpr.human_addable()) {
+					// 什么都不召唤
+					break;
+				}
 				var newman = HumanController.add_human(transform.position, get_parent_script().gameObject);
 				if (newman == null) {
 					Debug.LogError ("召唤失败");
