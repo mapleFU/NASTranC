@@ -38,6 +38,7 @@ namespace SimuUtils
 
 		// 个人是否察觉到灾害
 		public bool in_disaster = false;
+
 		public static float MAX_DISASTER_BROADCAST;	// 人物时间步中传递灾害模式的半径
 		// 进入灾害模式
 		public void to_disaster_mode () {
@@ -59,17 +60,22 @@ namespace SimuUtils
 		//		public LiftController used_lift = null;
 		public HashSet<LiftController> used_list;
 
-		/*
+        /*
 		 * 判断给出的楼梯是可以使用的
-		 */ 
-		public bool lift_available(LiftController c) {
-			// at first is null.
-			if (used_list == null)
-				return true;
-			return !used_list.Contains (c);
-		}
+		 */
+        /*
+		 * 判断给出的楼梯是可以使用的
+		 */
+        public bool lift_available(LiftController c)
+        {
+            // at first is null.
+            if (used_list == null)
+                return true;
+            return !used_list.Contains(c);
+        }
 
-		static public double RandomGussion(double mean, double stdDev)
+
+        static public double RandomGussion(double mean, double stdDev)
 		{
 			double u1 = 1.0-rnd.NextDouble(); //uniform(0,1] random doubles
 			double u2 = 1.0-rnd.NextDouble();
@@ -104,12 +110,12 @@ namespace SimuUtils
 		//		public double reality_weight_lower;
 		//		public double reality_weight_upper;
 
-		private const double mutirate = 0.5f;
+		private const double mutirate = 0.3f;
 		// 正常情况下的 初始化速度和期望速度 
 		private const double reality_excspeed_mean = 1.26f * mutirate;
-		private const double reality_excspeed_stddev = 0.36f;
+		private const double reality_excspeed_stddev = 0.36f * mutirate;
 		private const double disaster_excspeed_mean = 1.56f * mutirate;
-		private const double disaster_excspeed_stddev = 0.16f;
+		private const double disaster_excspeed_stddev = 0.16f * mutirate;
 
 
 
@@ -126,8 +132,8 @@ namespace SimuUtils
 		private const double MAX_COUNT_DISTANCE = 0.5; 		// max_count_dis
 		private const double MAX_MENTALLY_DISTANCE = 1.6;
 		private const double MAX_B2P_DISTANCE = 0.75;
-		private const double P2P_CONSTEXPR = 1.0;
-		private const double B2P_CONSTEXPR = 2.0;		
+		private const double P2P_CONSTEXPR = 0.2;
+		private const double B2P_CONSTEXPR = 3;
 		private const double B2P_PHY_CONST = 1000;
 
 
@@ -256,7 +262,7 @@ namespace SimuUtils
 			dir.z = 0;
 			dir = dir.normalized;
 			//rb.velocity = dir * (float)cur_speed;
-			rb.velocity = dir *0;
+			rb.velocity = dir *0.01f;
 		}
 
 		// 初始化体重，希望能和radius相关
@@ -305,8 +311,8 @@ namespace SimuUtils
 
 			//			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
 			// TODO: 将 in_disaster
-			in_disaster = false;
-
+//			in_disaster = false;
+			in_disaster = true;
 		}
 
 		// Update is called once per frame
@@ -323,14 +329,15 @@ namespace SimuUtils
 				rb.velocity = rb.velocity* (1/cur_speed)*exc_speed;
 			}
 			Force 
-			pfe = potential_energy_field () * 0.5f;
+			pfe = potential_energy_field () ;
 			last_pfe = pfe;
 			Force
-			p2p = count_p2p() * 2,
-			b2p = count_b2p() * 0.05f;
+			p2p = count_p2p() ,
+			b2p = -count_b2p() ;
 
+			// DEBUG
 			p2p += 3.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
-			Force all = /*fhe*/ p2p + b2p + pfe;
+			Force all = /*fhe*/  b2p + pfe;
 			all += Vector2.Angle (all, rb.velocity) * K_CONST * all.normalized;
 
 			//            if (Vector3.Dot(rb.velocity, pfe) < 0)
@@ -371,7 +378,7 @@ namespace SimuUtils
 		}
 
 		private double LOWER_P2P_DELTA_LENGTH = 0.5;
-		private float P2P_K_CONST = 5.0f;
+		private float P2P_K_CONST = 1.0f;
 		private Force aux_mentally_p2p()
 		{
 			Force mental_force = new Force(0, 0);
@@ -406,41 +413,29 @@ namespace SimuUtils
 		{
 			Force f = new Force (0, 0);
 
-			//			int blocks = 0;
 			foreach (BlockController controller in father_containers.blocks) {
-				//				++blocks;
+				
 				double current_distance = controller.get_distance_to_human (this) - this.radius;
 
-				if (current_distance >= 0.2)
+				if (current_distance >= 0.1)
 					continue;
 				Vector2 closest_point = controller.get_closest_point (this);
 				// Still this way...?
 				Vector2 b2p_direction = ((Vector2)this.transform.position - closest_point).normalized;
 				// 心理接触力 修正
 				var cur_force = (float)(B2P_CONSTEXPR * Math.Exp (-current_distance / 0.2)) * b2p_direction;
-				//				Debug.Log ("b2p mentally " + cur_force);
-				f += cur_force;
-				//				//Debug.Log ("Cur force " + cur_force);
-				// 身体接触力
-				double physic_distance = current_distance;
-				if (physic_distance < 0.01) {
-					Force normal = (float)(-physic_distance * B2P_PHY_CONST) * b2p_direction;
-					//					Debug.Log ("normal " + normal + " distance * const = " + (-physic_distance * B2P_PHY_CONST));
-					Vector2 tang_direc = get_tang_direct (b2p_direction, this, controller);
-					Force tangent = tang_direc * VectorMultiply (tang_direc, this.Current_velocity) * 20.0f * (float)current_distance;
-					//					Debug.Log ("b2p en " + normal);
-					//					Debug.Log ("Tang " + tangent);
-					//					Debug.Log ("b2p et " + tang_direc);
-					f += (normal + tangent);
-				}
+				f += -cur_force;
+				//// 身体接触力
+				//double physic_distance = current_distance;
+				//if (physic_distance < 0.01) {
+				//	Force normal = (float)(-physic_distance * B2P_PHY_CONST) * b2p_direction;
+
+				//	Vector2 tang_direc = get_tang_direct (b2p_direction, this, controller);
+				//	Force tangent = tang_direc * VectorMultiply (tang_direc, this.Current_velocity) * 20.0f * (float)current_distance;
+				//	f += (normal + tangent);
+				//}
 
 			}
-
-			//			// DEBUG
-			//			if (!used) {
-			//				Debug.Log ("There are " + blocks + "blocks.");
-			////				used = true;
-			//			}
 
 			return f;
 		}
@@ -474,7 +469,7 @@ namespace SimuUtils
 
 
 		// 势能场力常数
-		public static float potential_energy_field_constexpr=100.0f;
+		public static float potential_energy_field_constexpr=5.0f;
 
 		/*
 		 * 根据人的属性得到需要的apf

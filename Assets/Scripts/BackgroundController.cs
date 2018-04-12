@@ -73,6 +73,14 @@ namespace SimuUtils {
         public int myLayer;
         private float height;
         private float width;
+		public float get_x() {
+			return bounds.size.x;
+		}
+
+		public float get_y() {
+			return bounds.size.y;
+		}
+
         public float xmin, ymin;
         // 双亲的长度
         private float parent_x;
@@ -192,9 +200,10 @@ namespace SimuUtils {
         }
 
         // Use this for initialization
+		private BoxCollider2D bounds;
         private static readonly object syncLock = new object();
         public virtual void Start() {
-            var bounds = GetComponent<BoxCollider2D>();
+            bounds = GetComponent<BoxCollider2D>();
 
             // 获得长与宽
             width = bounds.size.x * transform.localScale.x;

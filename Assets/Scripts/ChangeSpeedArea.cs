@@ -9,7 +9,7 @@ using SimuUtils;
 public class ChangeSpeedArea :  BaseChildObject
 {
 	// 速度常数，在其中的物体速度乘以它
-	public const float speed_expr = 0.8f;
+	public const float speed_expr = 0f;
 
 	/*
 	 *  判断二者是否是同一个父亲

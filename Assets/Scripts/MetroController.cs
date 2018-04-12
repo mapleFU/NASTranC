@@ -47,7 +47,7 @@ public class MetroController : BaseChildObject
 	 */
 	private float wait_time = 10.0f;		// 每波车等待的事件
     private float down_time = 20.0f;		// 允许上车时间间隔
-	private int per_wave = 3;		// 每一波的人
+	private int per_wave = 2;		// 每一波的人
 
 	private bool can_go_up;		// 可以上车
 

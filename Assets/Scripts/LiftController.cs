@@ -59,19 +59,30 @@ namespace SimuUtils
 		{
 			if (other.gameObject.CompareTag ("Human"))
 			{
-				
-//				other.gameObject.SetActive (false);
 				GameObject game_obj = other.gameObject;
 				HumanController script = game_obj.GetComponent<HumanController> ();
-				BackgroundController old_parent = get_parent_script ();
-				if (ConfigConstexpr.get_instance().has_disaster && !up_or_down) {
-					// 如果在灾害中并且是一个下楼的楼梯
-					return;
-				}
-
 				if (!script.lift_available(this)) {
+					Debug.Log ("Lift not availabe");
 					return;
 				}
+				string parent_name = script.get_parent_script ().name;
+
+				if (parent_name.Contains ("First")) {
+					if (script.in_disaster)
+						return;
+					if (!script.take_subway) {
+						// 一楼，乘地铁
+						Debug.Log("一楼，不乘地铁");
+						return;
+					}
+				} else if (parent_name.Contains ("Second")) {
+
+					if (script.take_subway && !script.in_disaster) {
+						Debug.Log("二楼，乘地铁");
+						return;
+					}
+				}
+					
 
 				if (script == null) {
 					Debug.Log ("Bad Human! Human here don't have script!");
@@ -142,12 +153,27 @@ namespace SimuUtils
 						Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
 					}
 
+//					Vector2 std_scale = HumanController.HUMAN_REAL_SCALE;
 
-
-					script.transform.localScale = localscale;
+//					float x = 0.1f / to_script.get_x();
+//					float y = 0.1f / to_script.get_y();
+//					float z = 1.0f;
+//					script.transform.localScale = new Vector3(x, y, z);
+					if (to_script.gameObject.name.Contains ("First")) {
+						script.transform.localScale = new Vector3 (0.007142857f, 0.025f, 5.0f);
+					} else if (to_script.gameObject.name.Contains ("Second")) {
+						script.transform.localScale = new Vector3 (0.00625f, 0.03333334f, 5.0f);
+					} else if (to_script.gameObject.name.Contains ("Stair")) {
+						if (to_script.gameObject.name.Contains ("Mid")) {
+							script.transform.localScale = new Vector3 (0.016666667f, 0.25f, 5f);
+						} else {
+							script.transform.localScale = new Vector3 (0.016666667f, 0.25f, 5f);
+						}
+					}
+					script.gameObject.layer = to_script.gameObject.layer;
 					script.transform.rotation = rotate;
 					HelperScript.change_z (script);
-					Debug.Log ("Change " + other.gameObject.name + " from " + old_parent + " to "+  to_script);
+				
 				}
 
 
