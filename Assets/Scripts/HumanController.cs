@@ -38,7 +38,6 @@ namespace SimuUtils
 
 		// 个人是否察觉到灾害
 		public bool in_disaster = false;
-
 		public static float MAX_DISASTER_BROADCAST;	// 人物时间步中传递灾害模式的半径
 		// 进入灾害模式
 		public void to_disaster_mode () {
@@ -113,9 +112,9 @@ namespace SimuUtils
 		private const double mutirate = 0.3f;
 		// 正常情况下的 初始化速度和期望速度 
 		private const double reality_excspeed_mean = 1.26f * mutirate;
-		private const double reality_excspeed_stddev = 0.36f * mutirate;
+		private const double reality_excspeed_stddev = 0.16f * mutirate;
 		private const double disaster_excspeed_mean = 1.56f * mutirate;
-		private const double disaster_excspeed_stddev = 0.16f * mutirate;
+		private const double disaster_excspeed_stddev = 0.06f * mutirate;
 
 
 
@@ -311,14 +310,14 @@ namespace SimuUtils
 
 			//			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
 			// TODO: 将 in_disaster
-//			in_disaster = false;
-			in_disaster = true;
+			in_disaster = false;
+
 		}
 
 		// Update is called once per frame
 
 		// count force 
-		private float K_CONST = 2.0f;
+		private float K_CONST = 10.0f;
 		public void Update () {
 			// DEBUG
 
@@ -332,11 +331,11 @@ namespace SimuUtils
 			pfe = potential_energy_field () ;
 			last_pfe = pfe;
 			Force
-			p2p = count_p2p() ,
+			p2p = count_p2p(),
 			b2p = -count_b2p() ;
 
 			// DEBUG
-			p2p += 3.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
+			p2p += 100.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
 			Force all = /*fhe*/  b2p + pfe;
 			all += Vector2.Angle (all, rb.velocity) * K_CONST * all.normalized;
 
@@ -377,7 +376,7 @@ namespace SimuUtils
 			return new Force(0, 0);
 		}
 
-		private double LOWER_P2P_DELTA_LENGTH = 0.5;
+		private double LOWER_P2P_DELTA_LENGTH = 0.3;
 		private float P2P_K_CONST = 1.0f;
 		private Force aux_mentally_p2p()
 		{
@@ -417,13 +416,13 @@ namespace SimuUtils
 				
 				double current_distance = controller.get_distance_to_human (this) - this.radius;
 
-				if (current_distance >= 0.1)
+				if (current_distance >= 0.18)
 					continue;
 				Vector2 closest_point = controller.get_closest_point (this);
 				// Still this way...?
 				Vector2 b2p_direction = ((Vector2)this.transform.position - closest_point).normalized;
 				// 心理接触力 修正
-				var cur_force = (float)(B2P_CONSTEXPR * Math.Exp (-current_distance / 0.2)) * b2p_direction;
+				var cur_force = (float)(B2P_CONSTEXPR * Math.Exp (-current_distance / 5)) * b2p_direction;
 				f += -cur_force;
 				//// 身体接触力
 				//double physic_distance = current_distance;
@@ -670,7 +669,13 @@ namespace SimuUtils
 
 			int minx=-5, miny=-5;
 			float min_value = 300000;
-			float cur_value = map[y, x];
+			float cur_value = 0.0f;
+			try {
+				cur_value = map[y, x];	
+			} catch (IndexOutOfRangeException e) {
+				gameObject.SetActive (false);
+			}
+
 			for (int i = y - 3; i <= y + 3; ++i) {
 				for (int j = x - 3; j <= x + 3; ++j) {
 					if (if_in(i, j))

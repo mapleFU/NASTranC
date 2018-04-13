@@ -18,14 +18,29 @@ public class ChangeSpeedArea :  BaseChildObject
 		return other.transform.parent == transform.parent;
 	}
 
+	void setNonstatic(GameObject collider) {
+		collider.GetComponent<Rigidbody2D>().isKinematic = false;
+	}
+
+	IEnumerator MyFunction(GameObject collider, float delayTime)
+	{
+		yield return new WaitForSeconds(delayTime);
+		setNonstatic (collider);
+		// Now do your thing here
+	}
+
 	void OnTriggerEnter2D(Collider2D other) {
 		GameObject collider_object = other.gameObject;
+
 		if (collider_object.CompareTag ("Human")) {
 			if (same_father (collider_object)) {
 				Rigidbody2D rigid = collider_object.GetComponent<Rigidbody2D> ();
 				rigid.velocity *= speed_expr;
 			}
 		}
+		collider_object.GetComponent<Rigidbody2D>().isKinematic = true;
+		Invoke ("setNonstatic", 0.5f);
+		StartCoroutine (MyFunction (collider_object, 0.5f));
 	}
 
 //	void OnTriggerExit2D(Collider2D other)

@@ -34,8 +34,6 @@ namespace SimuUtils
 		private ConfigConstexpr () { 
 //			es_is_running = false;
 			has_disaster = false;
-			// DEBUG
-			has_disaster = true;
 		}
 
 		// 设置灾害出现
