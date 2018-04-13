@@ -153,12 +153,6 @@ namespace SimuUtils
 						Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
 					}
 
-//					Vector2 std_scale = HumanController.HUMAN_REAL_SCALE;
-
-//					float x = 0.1f / to_script.get_x();
-//					float y = 0.1f / to_script.get_y();
-//					float z = 1.0f;
-//					script.transform.localScale = new Vector3(x, y, z);
 					if (to_script.gameObject.name.Contains ("First")) {
 						script.transform.localScale = new Vector3 (0.007142857f, 0.025f, 5.0f);
 					} else if (to_script.gameObject.name.Contains ("Second")) {
@@ -170,7 +164,7 @@ namespace SimuUtils
 							script.transform.localScale = new Vector3 (0.016666667f, 0.25f, 5f);
 						}
 					}
-					script.gameObject.layer = to_script.gameObject.layer;
+
 					script.transform.rotation = rotate;
 					HelperScript.change_z (script);
 				
