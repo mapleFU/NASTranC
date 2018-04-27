@@ -55,6 +55,7 @@ namespace SimuUtils
 		public void Awake() {}
 
 //		private static Interlocked atom_lock = new Interlocked();
+		private int pass_by_cnt = 0;
 		protected virtual void OnTriggerEnter2D (Collider2D other)
 		{
 			if (other.gameObject.CompareTag ("Human"))
@@ -72,7 +73,6 @@ namespace SimuUtils
 						return;
 					if (!script.take_subway) {
 						// 一楼，乘地铁
-						Debug.Log("一楼，不乘地铁");
 						return;
 					}
 				} else if (parent_name.Contains ("Second")) {
@@ -97,12 +97,12 @@ namespace SimuUtils
 				 * 考虑父对象使用自己的生成算法
 				 */ 
 				// 更改game_obj的父对象
-				// TODO: 搞清楚是不是要多重改变
 				var rotate = other.transform.localRotation;
 				var localscale = other.transform.localScale;
 
 //				lock (atom_lock) 
 				{
+					++pass_by_cnt;
 					bkg_ctrl.childObjects.humans.Remove (game_obj);
 					// 获得Link对象的父脚本to_script
 					var to_s = to.GetComponent<LiftController>();
@@ -142,38 +142,12 @@ namespace SimuUtils
 					script.change_new_father_container (to_script);
 					script.change_destine ();
 
-					//				Debug.Log ("To : " + to_script.gameObject);
 					game_obj.layer = to_script.gameObject.layer;
 					/*
 					 *  need to change layer.
 					 */ 
-					// change the child and change camera
-					if (CameraScript.Instance.watched_player == script.transform) {
-						CameraScript.Instance.relayer_child_camera ();
-						Debug.Log ("Camera Layer num: " + CameraScript.Instance.gameObject.layer);
-					}
-
-//					Vector2 std_scale = HumanController.HUMAN_REAL_SCALE;
-
-//					float x = 0.1f / to_script.get_x();
-//					float y = 0.1f / to_script.get_y();
-//					float z = 1.0f;
-//					script.transform.localScale = new Vector3(x, y, z);
-					if (to_script.gameObject.name.Contains ("First")) {
-						script.transform.localScale = new Vector3 (0.007142857f, 0.025f, 5.0f);
-					} else if (to_script.gameObject.name.Contains ("Second")) {
-						script.transform.localScale = new Vector3 (0.00625f, 0.03333334f, 5.0f);
-					} else if (to_script.gameObject.name.Contains ("Stair")) {
-						if (to_script.gameObject.name.Contains ("Mid")) {
-							script.transform.localScale = new Vector3 (0.02f, 0.3f, 5f);
-						} else {
-							script.transform.localScale = new Vector3 (0.02f, 0.3f, 5f);
-						}
-					}
-					script.gameObject.layer = to_script.gameObject.layer;
 					script.transform.rotation = rotate;
-					HelperScript.change_z (script);
-				
+					PersonAdder.LayerChange (script, to_script);
 				}
 
 

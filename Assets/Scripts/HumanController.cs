@@ -43,8 +43,7 @@ namespace SimuUtils
 		public void to_disaster_mode () {
 			in_disaster = true;	
 			SpriteRenderer sr = GetComponent<SpriteRenderer> ();
-			sr.color = new Color (1.0f, 0, 0);
-
+			sr.color = Color.green;
 		}
 
 		// 人出现的目标点
@@ -535,7 +534,7 @@ namespace SimuUtils
 					// 有app
 					if (take_subway) {
 						// 要乘车
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							needed_apf = bkg_script.APF01;
 							Debug.Log ("Choose APF01");
 						} else {
@@ -543,7 +542,7 @@ namespace SimuUtils
 							Debug.Log ("Choose APF11");
 						}
 					} else {
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							needed_apf = bkg_script.APF02;
 							Debug.Log ("Choose APF02");
 						} else {
@@ -559,7 +558,7 @@ namespace SimuUtils
 
 					// 根据有无app选择对应的list
 					if (take_subway) {
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							search_list = bkg_script.APF05;
 							Debug.Log ("Choose APF05");
 						} else {
@@ -568,7 +567,7 @@ namespace SimuUtils
 						}
 
 					} else {
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							search_list = bkg_script.APF06;
 							Debug.Log ("Choose APF06");
 						} else {
@@ -698,21 +697,9 @@ namespace SimuUtils
 					}
 				}
 			}
-			//			if (minx == miny && minx == 30000) {
-			//				// 旁边都是墙，我也不知道怎么走
-			//				return null;
-			//			}
 
 			var force_direc = new Force (minx-x, y-miny);
 			force_direc.Normalize ();
-
-			////			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
-			//			if (get_parent_script().gameObject.name.Contains("Stair")) {
-			//				var fx = force_direc;
-			//				fx.x = -force_direc.y;
-			//				fx.y = force_direc.x;
-			//				force_direc = fx;
-			//			}
 
 			// 方向的单位矢量乘以常数
 			return force_direc * potential_energy_field_constexpr;

@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4134601466408130}
   - component: {fileID: 212695772715304008}
-  - component: {fileID: 50142964231388302}
   - component: {fileID: 114226441570537472}
   - component: {fileID: 58308248106669294}
+  - component: {fileID: 50142964231388302}
   m_Layer: 0
   m_Name: LittleHuman
   m_TagString: Human
@@ -37,8 +37,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1926025631387210}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.9, y: 1.54, z: -0.41}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 5}
+  m_LocalPosition: {x: 4.2, y: -0.612, z: -0.40999985}
+  m_LocalScale: {x: 0.06, y: 0.06, z: -0.41}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -54,10 +54,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.28274336
+  m_Mass: 30
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -89,11 +89,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d3d5ef2e1d249a7a100312d2eb6433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentObject: {fileID: 0}
   in_disaster: 0
-  used_lift: {fileID: 0}
   rb: {fileID: 50142964231388302}
-  potential_energy_field_constexpr: 0
+  has_app: 0
+  take_subway: 0
 --- !u!212 &212695772715304008
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -108,7 +107,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5e9423cffb138495a8fd43d2e8e10793, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -128,8 +127,8 @@ SpriteRenderer:
   m_SortingLayerID: -580500139
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: ab5bebae2d0d94bea90dd883f5154d82, type: 3}
-  m_Color: {r: 0.33088237, g: 0.24816178, b: 0.24816178, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 031094ced39e1451682ec6a50098534e, type: 3}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

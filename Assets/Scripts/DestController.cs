@@ -36,10 +36,12 @@ namespace SimuUtils
 		/*
 		 * 
 		 */ 
+
+		private int add_person_cnt = 0;
 		// 添加人
 		void dest_add_person() {
 			// 如果是不可以加人的状态，那么什么都不会发生
-
+			++add_person_cnt;
 			Debug.Log ("召唤准备！");
 			for (int i = 0; i < person_per_wave; ++i) {
 				if (!ConfigConstexpr.human_addable()) {
@@ -52,7 +54,7 @@ namespace SimuUtils
 				}
 				newman.layer = gameObject.layer;
 				HumanController new_script = newman.GetComponent<HumanController> ();
-			
+				PersonAdder.LayerChange (new_script, get_parent_script());
 				new_script.take_subway = true;
 
 			}
