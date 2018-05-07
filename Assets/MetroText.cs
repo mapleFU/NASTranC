@@ -24,7 +24,7 @@ public class MetroText : MonoBehaviour {
 	private void updateText() {
 		string text_content = "";
 		for (int i = 1; i <= METRO_NUMS; i++) {
-			text_content += $"{i}->coming: {humanGeneratingCounts[i - 1]}, Leaving: {humanLeavingCounts[i-1]}\n";
+			text_content += i + "->coming: " + humanGeneratingCounts[i - 1] + ", Leaving: " + humanLeavingCounts[i-1] + "\n";
 		}
 
 		text.text = text_content;

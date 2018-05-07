@@ -104,7 +104,7 @@ public class MetroController : BaseChildObject
 		gameobj.gameObject.layer = p_script.gameObject.layer;
 		HumanController p_c = gameobj.GetComponent<HumanController> ();
 		p_c.transform.parent = parentTransform;
-		PersonAdder.LayerChange (p_c, get_parent_script());
+		PersonAdder.LayerChange (p_c, p_script);
 		p_c.take_subway = false;
 		p_c.Start ();
 	}
