@@ -92,8 +92,6 @@ namespace SimuUtils
 			return (upper - lower) * random01 + lower;
 		}
 
-		// 常量-平均值-分布 对应的常量调整
-
 		// 半径量
 		private const double unity_radius_scale = 0.05f;		// 缩小倍率
 		private const double reality_radius_normal = 0.45f;	// 半径平均是多少m
@@ -119,10 +117,10 @@ namespace SimuUtils
 
 
 
-		private const double reality_inispeed_mean = 0.5f;
-		private const double reality_inispeed_stddev = 0.1f;
-		private const double disaster_inispeed_mean = 0.58f;
-		private const double disaster_inispeed_stddev = 0.1f;
+		private const double reality_inispeed_mean = 1.0f;
+		private const double reality_inispeed_stddev = 0.2f;
+		private const double disaster_inispeed_mean = 1.16f;
+		private const double disaster_inispeed_stddev = 0.2f;
 		//		public double reality_inispeed_mean;
 		//		public double reality_inispeed_stddev;
 
@@ -130,11 +128,12 @@ namespace SimuUtils
 		// running constexpr 
 		private const double TIME_EXPR = 0.5;
 		private const double MAX_COUNT_DISTANCE = 0.5; 		// max_count_dis
-		private const double MAX_MENTALLY_DISTANCE = 0.5;
-		private const double MAX_B2P_DISTANCE = 0.25;
+		private const double MAX_MENTALLY_DISTANCE = 1.6;
+		private const double MAX_B2P_DISTANCE = 0.75;
 		private const double P2P_CONSTEXPR = 0.2;
-		private const double B2P_CONSTEXPR = 1;
+		private const double B2P_CONSTEXPR = 3;
 		private const double B2P_PHY_CONST = 1000;
+
 
 
 		// rigidbody
@@ -363,7 +362,6 @@ namespace SimuUtils
 			if (is_fallen) {
 				return;
 			}
-			// DEBUG
 
 			// update speed
 			cur_speed = rb.velocity.magnitude;
@@ -377,30 +375,26 @@ namespace SimuUtils
 			Force
 			p2p = count_p2p(),
 			b2p = -count_b2p() ;
+
 			// DEBUG
-			if ((p2p + b2p).magnitude >= this.weight) {
-				fallen_down();
-				return;
-			}
-
-			p2p += 10.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
-			Debug.Log ("uid: " + this.current_uid + " pfe: " + pfe + " p2p " + p2p + " b2p " + b2p);
-
-			Force all = /*fhe*/  b2p + pfe + p2p;
+			p2p += 100.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
+			Force all = /*fhe*/  b2p + pfe;
 			all += Vector2.Angle (all, rb.velocity) * K_CONST * all.normalized;
 
-
+			//            if (Vector3.Dot(rb.velocity, pfe) < 0)
+			//            {
+			//                Vector3 dir = new Vector3();
+			//                dir.x = pfe.x;
+			//                dir.y = pfe.y;
+			//                dir.z = 0;
+			//                this.rb.velocity = dir * 0;
+			//            }
 			this.rb.AddForce(all);
 			// DEBUG
 
 			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
 				get_parent_script().gameObject.name);
-
-//			//点击检测
-//			if (Input.GetButtonDown("Fire1")) {
-//				// TODO: fill in
-//				CameraScript.Instance.onBind(this);
-//			}
+			
 		}
 
 		private Force count_fhe()
