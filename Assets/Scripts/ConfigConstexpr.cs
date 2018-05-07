@@ -10,7 +10,7 @@ namespace SimuUtils
 	{
 		private static ConfigConstexpr Instance;
 
-		private static bool human_add_able = true;
+		private static bool human_add_able = false;
 		// 是否可以产生人
 		public static bool human_addable() {
 			return human_add_able;
@@ -33,7 +33,7 @@ namespace SimuUtils
 
 		private ConfigConstexpr () { 
 //			es_is_running = false;
-			has_disaster = false;
+			has_disaster = true;
 		}
 
 		// 设置灾害出现

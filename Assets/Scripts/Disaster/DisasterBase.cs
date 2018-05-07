@@ -34,13 +34,12 @@ namespace SimuUtils {
 		}
 
 		void Update() {
-			if (father_script == null)
-				return;
 			foreach (HumanController human in father_script.childObjects.humans) {
 				Rigidbody2D rb = human.GetComponent<Rigidbody2D> ();
+				rb.AddForce (fire_force_to_human(human));
+
 
 				if (Vector2.Distance (human.transform.position, transform.position) <= max_broadcast) {
-					rb.AddForce (fire_force_to_human(human));
 					Debug.Log ("灾害爆发，让世界感受痛苦！");
 					human.to_disaster_mode ();
 				} 
