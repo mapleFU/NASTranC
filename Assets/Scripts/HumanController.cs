@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using SimuUtils;
 
 namespace SimuUtils
 {
@@ -14,6 +15,7 @@ namespace SimuUtils
 
 
 	public class HumanController : BaseChildObject {
+		private static int human_uid = 0;
 
 		public static GameObject add_human(Vector2 pos , GameObject parent) {
 			GameObject instance = Instantiate(Resources.Load("GamePrefab/LittleHuman"),
@@ -37,14 +39,13 @@ namespace SimuUtils
 		}
 
 		// 个人是否察觉到灾害
-		public bool in_disaster = true;
-		public static float MAX_DISASTER_BROADCAST;	// 人物时间步中传递灾害模式的半径
+		public bool in_disaster = false;
+		public static float MAX_DISASTER_BROADCAST = 1.0f;	// 人物时间步中传递灾害模式的半径
 		// 进入灾害模式
 		public void to_disaster_mode () {
 			in_disaster = true;	
 			SpriteRenderer sr = GetComponent<SpriteRenderer> ();
-			sr.color = new Color (1.0f, 0, 0);
-
+			sr.color = Color.green;
 		}
 
 		// 人出现的目标点
@@ -118,10 +119,10 @@ namespace SimuUtils
 
 
 
-		private const double reality_inispeed_mean = 1.0f;
-		private const double reality_inispeed_stddev = 0.2f;
-		private const double disaster_inispeed_mean = 1.16f;
-		private const double disaster_inispeed_stddev = 0.2f;
+		private const double reality_inispeed_mean = 0.5f;
+		private const double reality_inispeed_stddev = 0.1f;
+		private const double disaster_inispeed_mean = 0.58f;
+		private const double disaster_inispeed_stddev = 0.1f;
 		//		public double reality_inispeed_mean;
 		//		public double reality_inispeed_stddev;
 
@@ -129,16 +130,18 @@ namespace SimuUtils
 		// running constexpr 
 		private const double TIME_EXPR = 0.5;
 		private const double MAX_COUNT_DISTANCE = 0.5; 		// max_count_dis
-		private const double MAX_MENTALLY_DISTANCE = 1.6;
-		private const double MAX_B2P_DISTANCE = 0.75;
+		private const double MAX_MENTALLY_DISTANCE = 0.5;
+		private const double MAX_B2P_DISTANCE = 0.25;
 		private const double P2P_CONSTEXPR = 0.2;
-		private const double B2P_CONSTEXPR = 3;
+		private const double B2P_CONSTEXPR = 1;
 		private const double B2P_PHY_CONST = 1000;
 
 
 		// rigidbody
 		public Rigidbody2D rb;
 
+		// 这个人对应的uid
+		private int current_uid;
 		private double weight;			// 质量-> Rigid2d.mass
 		private double radius;			// 半径
 		private float _normal_exc_speed;	// 预期速度
@@ -252,7 +255,6 @@ namespace SimuUtils
 			////						Debug.Log (human);
 			////					}
 			//				}
-
 			//			}
 			Vector3 dir=new Vector3() ;
 			System.Random rd = new System.Random();
@@ -286,11 +288,14 @@ namespace SimuUtils
 			}
 		}
 
+
+
 		/*
 		 * 脚本初始化  
 		 */ 
 		private Force last_pfe;
 		public override void Start () {
+			current_uid = human_uid++;
 			// to myself first.
 			//			Debug.Log("Human want's to start.");
 			var daddy = get_parent_script();
@@ -314,11 +319,50 @@ namespace SimuUtils
 
 		}
 
-		// Update is called once per frame
 
+		void setNonstatic(GameObject collider) {
+			collider.GetComponent<Rigidbody2D>().isKinematic = false;
+		}
+
+		IEnumerator MyFunction(GameObject collider, float delayTime)
+		{
+			yield return new WaitForSeconds(delayTime);
+			setNonstatic (collider);
+			is_fallen = false;
+		}
+
+		// 是否摔倒 -- 没有摔倒
+		private bool is_fallen = false;
+		private static float FALLEN_TIME = 2.0f;
+		// 人物跌倒
+		private void fallen_down() {
+			Debug.Log("Fallen for person(" + human_uid + ") in place " + current_position);
+			this.GetComponent<Rigidbody2D>().isKinematic = true;
+			StartCoroutine (MyFunction (this.gameObject, FALLEN_TIME));
+		}
+
+		// Update is called once per frame
 		// count force 
 		private float K_CONST = 10.0f;
 		public void Update () {
+			if (in_disaster) {
+				foreach (HumanController c in father_containers.humans) {
+					if (c == this || c.gameObject.activeSelf == false)
+						continue;
+					if (c.in_disaster)
+						continue;
+					// 直接的距离值
+					var distance = Vector2.Distance (c.current_position, current_position);
+					if (distance <= MAX_DISASTER_BROADCAST) {
+						// 小于距离
+						c.to_disaster_mode();
+					}
+				}
+			}
+
+			if (is_fallen) {
+				return;
+			}
 			// DEBUG
 
 			// update speed
@@ -333,31 +377,30 @@ namespace SimuUtils
 			Force
 			p2p = count_p2p(),
 			b2p = -count_b2p() ;
-
 			// DEBUG
-			p2p += 100.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
-			Force all = /*fhe*/  b2p + pfe;
+			if ((p2p + b2p).magnitude >= this.weight) {
+				fallen_down();
+				return;
+			}
+
+			p2p += 10.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
+			Debug.Log ("uid: " + this.current_uid + " pfe: " + pfe + " p2p " + p2p + " b2p " + b2p);
+
+			Force all = /*fhe*/  b2p + pfe + p2p;
 			all += Vector2.Angle (all, rb.velocity) * K_CONST * all.normalized;
 
-			//            if (Vector3.Dot(rb.velocity, pfe) < 0)
-			//            {
-			//                Vector3 dir = new Vector3();
-			//                dir.x = pfe.x;
-			//                dir.y = pfe.y;
-			//                dir.z = 0;
-			//                this.rb.velocity = dir * 0;
-			//            }
+
 			this.rb.AddForce(all);
 			// DEBUG
 
 			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
 				get_parent_script().gameObject.name);
 
-			//点击检测
-			if (Input.GetButtonDown("Fire1")) {
-				// TODO: fill in
-				CameraScript.Instance.onBind(this);
-			}
+//			//点击检测
+//			if (Input.GetButtonDown("Fire1")) {
+//				// TODO: fill in
+//				CameraScript.Instance.onBind(this);
+//			}
 		}
 
 		private Force count_fhe()
@@ -535,7 +578,7 @@ namespace SimuUtils
 					// 有app
 					if (take_subway) {
 						// 要乘车
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							needed_apf = bkg_script.APF01;
 							Debug.Log ("Choose APF01");
 						} else {
@@ -543,7 +586,7 @@ namespace SimuUtils
 							Debug.Log ("Choose APF11");
 						}
 					} else {
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							needed_apf = bkg_script.APF02;
 							Debug.Log ("Choose APF02");
 						} else {
@@ -559,7 +602,7 @@ namespace SimuUtils
 
 					// 根据有无app选择对应的list
 					if (take_subway) {
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							search_list = bkg_script.APF05;
 							Debug.Log ("Choose APF05");
 						} else {
@@ -568,7 +611,7 @@ namespace SimuUtils
 						}
 
 					} else {
-						if (ConfigConstexpr.get_instance ().es_is_running) {
+						if (in_disaster) {
 							search_list = bkg_script.APF06;
 							Debug.Log ("Choose APF06");
 						} else {
@@ -698,21 +741,9 @@ namespace SimuUtils
 					}
 				}
 			}
-			//			if (minx == miny && minx == 30000) {
-			//				// 旁边都是墙，我也不知道怎么走
-			//				return null;
-			//			}
 
 			var force_direc = new Force (minx-x, y-miny);
 			force_direc.Normalize ();
-
-			////			 DEBUG: 对于父亲层次如果是 Stair，请给你一个反方向的力量
-			//			if (get_parent_script().gameObject.name.Contains("Stair")) {
-			//				var fx = force_direc;
-			//				fx.x = -force_direc.y;
-			//				fx.y = force_direc.x;
-			//				force_direc = fx;
-			//			}
 
 			// 方向的单位矢量乘以常数
 			return force_direc * potential_energy_field_constexpr;

@@ -84,7 +84,7 @@ public class MetroController : BaseChildObject
     }
 
 
-
+	private int add_person_cnt = 0;
     /*
 	 * 某人下车
 	 */
@@ -92,15 +92,19 @@ public class MetroController : BaseChildObject
 		if (!ConfigConstexpr.human_addable ()) {
 			return;
 		}
+		++add_person_cnt;
 //		Debug.Log ("My daddy: " + get_parent_script().transform);
 		var pos = generate_pos ();
 		Debug.Log ("Add Pos = " + pos + " with father " + this.gameObject.name);
+//		PersonAdder.LayerChange ();
+
 		var gameobj = HumanController.add_human(pos, parentTransform.gameObject);
 		gameobj.transform.parent = p_script.transform;	// reset father.
 
 		gameobj.gameObject.layer = p_script.gameObject.layer;
 		HumanController p_c = gameobj.GetComponent<HumanController> ();
 		p_c.transform.parent = parentTransform;
+		PersonAdder.LayerChange (p_c, p_script);
 		p_c.take_subway = false;
 		p_c.Start ();
 	}
@@ -108,15 +112,19 @@ public class MetroController : BaseChildObject
 	void Awake()  {
 		//TODO: DEBUG!!!!
 		Invoke ("invoked", down_time);
-//		Invoke ("set_cannot_goup", wait_time + down_time);
 	}
 
+	/*
+	 * 与他人产生碰撞的反应
+	 */ 
+	private int pass_by_cnt = 0;
 	public void OnTriggerEnter2D (Collider2D other)
 	{
 		
 		if (!can_go_up || ConfigConstexpr.get_instance().has_disaster)
 			return;
 		if (other.CompareTag ("Human")) {
+			++pass_by_cnt;
 			HumanController hc = other.GetComponent<HumanController> ();
 			if (hc.take_subway) {
 				other.gameObject.SetActive (false);
