@@ -17,6 +17,10 @@ namespace SimuUtils
 	public class HumanController : BaseChildObject {
 		private static int human_uid = 0;
 
+		/**
+		 * 输出人的uid
+		 * 在表中表示力的存储和方向
+		 */ 
 		public int getUID() {
 			return this.current_uid;
 		}
@@ -47,9 +51,34 @@ namespace SimuUtils
 		public static float MAX_DISASTER_BROADCAST = 1.0f;	// 人物时间步中传递灾害模式的半径
 		// 进入灾害模式
 		public void to_disaster_mode () {
+			// 自我调整模式
 			in_disaster = true;	
+			// 颜色变化
 			SpriteRenderer sr = GetComponent<SpriteRenderer> ();
-			sr.color = Color.green;
+			Color c = sr.color;
+			bool colored = false;
+			Color resp_c = Color.black;
+			bool color_in_mode = false, color_in_upper_mode = false;
+			foreach (Color cr in this.corespond_color) {
+				if (cr == c) {
+					resp_c = cr;
+					colored = true;
+					break;
+				}
+			}
+			if (colored) {
+				sr.color = this.upper_corespond_color [this.color_to_num [resp_c]];
+			} else {
+				foreach (Color cr in this.upper_corespond_color) {
+					if (cr == c) {
+						resp_c = cr;
+						return;
+					}
+				}
+				// 否则变绿
+				sr.color = Color.green;
+			}
+
 		}
 
 		// 人出现的目标点
@@ -306,6 +335,36 @@ namespace SimuUtils
 			father_containers = daddy.childObjects;
 			father_containers.humans.Add (this);
 
+			// init data contains
+			float_arr [0] = daddy.APF01;
+			float_arr [1] = daddy.APF11;
+			float_arr [2] = daddy.APF02;
+			float_arr [3] = daddy.APF12;
+
+			corespond_color [0] = Color.blue;
+			corespond_color [1] = Color.yellow;
+			corespond_color [2] = Color.cyan;
+			corespond_color [3] = Color.magenta;
+
+			upper_corespond_color [0] = new Color (0.2f, 0.3f, 0.4f);
+			upper_corespond_color [1] = new Color (1.0f, 0.3f, 0.8f);
+			upper_corespond_color [2] = new Color (0.5f, 1.0f, 0.25f);
+			upper_corespond_color [3] = new Color (0.7f, 0.5f, 0.3f);
+
+			// 构造对应的映射字典。
+			for (int i = 0; i < 4; i++) {
+				color_to_num [corespond_color [i]] = i;
+				upper_color_to_num [upper_corespond_color [i]] = i;
+			}
+//			private float[][,] float_arr = new float[4][,];
+//			private Color[] corespond_color = new Color[4];
+//			private Dictionary<Color, int> color_to_num = new Dictionary<Color, int>();
+
+			if (daddy.gameObject.name.Contains ("Second")) {
+				// 需要根据固定的apf来生成对应的场。
+				generate_fixed_apf();
+			}
+
 			rb = GetComponent<Rigidbody2D> ();
 			// 防止旋转
 			rb.freezeRotation=true;
@@ -554,7 +613,52 @@ namespace SimuUtils
 			return min_arr;
 		}
 
+		/**
+		 * 是否有固定的apf
+		 * @如果fixed_apf 为true 则--  直接选择固定的apf
+		 * 				 为false 则--  正常进行
+		 */ 
+		private bool fixed_apf;
+		/**
+		 * 选中的固定的apf
+		 */ 
+		private float[,] fixed_already_apf;
+		/// <summary>
+		/// 随机数生成用rnd
+		/// </summary>
+//		private Random rnd = new Random();
+
+		private float[][,] float_arr = new float[4][,];
+		private Color[] corespond_color = new Color[4];
+		private Dictionary<Color, int> color_to_num = new Dictionary<Color, int>();
+		private Color[] upper_corespond_color = new Color[4];
+		private Dictionary<Color, int> upper_color_to_num = new Dictionary<Color, int>();
+
+		// 按照一定的可能性，生成对应的fixed_apf
+		private void generate_fixed_apf() {
+			float[][,] float_arr = new float[4][,];
+			BackgroundController bkg_script = get_parent_script ();
+			// 如果小与这个概率
+			if (rnd.NextDouble() <= 0.1) {
+				fixed_apf = true;
+				int to_choose = (int)(rnd.NextDouble() * 4);
+				fixed_already_apf = float_arr [to_choose];
+
+				// change color
+				var renderer = this.GetComponent<SpriteRenderer>();
+				// TODO:颜色转变(为什么不用状态及)
+				if (in_disaster) {
+					renderer.color = upper_corespond_color [to_choose];
+				} else {
+					renderer.color = corespond_color [to_choose];
+				}
+
+			}
+		}
 		private float[,] get_apf() {
+			if (fixed_apf) {
+				return fixed_already_apf;
+			}
 			// 背景脚本
 			BackgroundController bkg_script = get_parent_script ();
 			float[,] needed_apf;
