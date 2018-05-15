@@ -30,19 +30,32 @@ public class CrossChannelController : BaseChildObject {
 			case "MidLift":
 			case "Lift":
 				mid = myTrans.GetComponent<LiftController> ();
-//				mid.parentObject = script.gameObject;
+				mid.initCrossChannel ();
+				mid.initStair ();
 				reversed_equal_lists.Add (mid);
 				break;
 			case "UpLift":
+				up = myTrans.GetComponent<LiftController> ();
+				up.initCrossChannel ();
+				up.initElescator (true);
+				reversed_equal_lists.Add (up);
+				break;
 			case "Lift (2)":
 				up = myTrans.GetComponent<LiftController> ();
-//				up.parentObject = script.gameObject;
+				up.initCrossChannel ();
+				up.initElescator (false);
 				reversed_equal_lists.Add (up);
 				break;
 			case "DownLift":
+				down = myTrans.GetComponent<LiftController> ();
+				down.initCrossChannel ();
+				down.initElescator (false);
+				reversed_equal_lists.Add (down);
+				break;
 			case "Lift (1)":
 				down = myTrans.GetComponent<LiftController> ();
-//				down.parentObject = script.gameObject;
+				down.initCrossChannel ();
+				down.initElescator (true);
 				reversed_equal_lists.Add (down);
 				break;
 			default:

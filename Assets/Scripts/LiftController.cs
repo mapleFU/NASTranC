@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 
+
 namespace SimuUtils
 {
 	// 采用电梯后速度如何变化
@@ -22,13 +23,63 @@ namespace SimuUtils
 		private BackgroundController bkg_ctrl;
 		private BackgroundController to_script;
 
+		// 是否是扶梯 和 是否在这个属性上被填充
+		private bool filled_elescator = false;
+		// 是否是elescator
+		private bool is_elescator;	
+		// 是向上的扶梯
+		private bool elescator_up;
+		// 是否在交错的楼梯口内
+		private bool in_cross_channel = false;
+		public void initCrossChannel() {
+			in_cross_channel = true;
+		}
+
+		public void initElescator(bool up_elescator) {
+			if (filled_elescator) {
+				return;
+//				throw new System.SystemException ("Filled already!");
+			}
+			is_elescator = true;
+			elescator_up = up_elescator;
+			filled_elescator = true;
+		}
+		public void initStair() {
+			if (filled_elescator) {
+				return;
+//				throw new System.SystemException ("Filled already!");
+			}
+			is_elescator = false;
+			filled_elescator = true;
+		}
+
+		private bool IsElescator {
+			get { 
+				if (!filled_elescator) {
+					Debug.Log ("Not cc and uninited");
+					return false;
+//					throw new System.SystemException ("Unfilled the elescator attr");
+				}
+				return is_elescator;
+			}
+		}
+		private bool IsStair {
+			get { 
+				if (!filled_elescator) {
+					Debug.Log ("Not cc and uninited");
+					return false;
+//					throw new System.SystemException ("Unfilled the elescator attr");
+				}
+				return !is_elescator;
+			}	
+		}
+
 		public HashSet<LiftController> un_allowed_lifts = null;
 
 		public override void Start()
 		{
 			
 			var daddy = get_parent_script ();	// 获得父对象
-//			Debug.Log ("Intended to create lifts in bkg: " + daddy.gameObject);
 			base.Start ();
 
 			if (!daddy.childObjects.dests.Contains (this)) {
@@ -42,9 +93,9 @@ namespace SimuUtils
 //				Debug.Log ("Lift should be a component of the background!");
 				return;
 			} else {
-				if (this.gameObject.name == "Lift") {
-					Debug.Log ("Lift Controller init with aim " + to + " and father " + get_parent_script().gameObject);		
-				}
+				
+				Debug.Log (this.gameObject.name + " and father " + get_parent_script().gameObject + " and is ele " + IsElescator + " and is stair " + IsStair + " and ele up " + elescator_up );		
+
 				var lift = to.GetComponent<LiftController> ();
 				lift.to = this.gameObject;
 			}
@@ -68,22 +119,31 @@ namespace SimuUtils
 				}
 				string parent_name = script.get_parent_script ().name;
 
-				if (parent_name.Contains ("First")) {
-					if (script.in_disaster)
-						return;
-					if (!script.take_subway) {
-						// 一楼，乘地铁
-						return;
-					}
-				} else if (parent_name.Contains ("Second")) {
+				if (in_cross_channel) {
+					if (parent_name.Contains ("First")) {
+						if (script.in_disaster)
+							return;
+						if (!script.take_subway) {
+							// 一楼，乘地铁
+							return;
+						} 
+						// 判断是向上的扶梯还是向下的扶梯
+						if (IsElescator && elescator_up) {
+							// 向上扶梯
+							return;
+						}
+					} else if (parent_name.Contains ("Second")) {
 
-					if (script.take_subway && !script.in_disaster) {
-						Debug.Log("二楼，乘地铁");
-						return;
+						if (script.take_subway && !script.in_disaster) {
+							Debug.Log("二楼，乘地铁");
+							return;
+						}
+						if (IsElescator && !elescator_up) {
+							return;
+						}
 					}
 				}
 					
-
 				if (script == null) {
 					Debug.Log ("Bad Human! Human here don't have script!");
 					return;
@@ -100,7 +160,6 @@ namespace SimuUtils
 				var rotate = other.transform.localRotation;
 				var localscale = other.transform.localScale;
 
-//				lock (atom_lock) 
 				{
 					++pass_by_cnt;
 					bkg_ctrl.childObjects.humans.Remove (game_obj);

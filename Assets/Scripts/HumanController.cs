@@ -17,6 +17,10 @@ namespace SimuUtils
 	public class HumanController : BaseChildObject {
 		private static int human_uid = 0;
 
+		public int getUID() {
+			return this.current_uid;
+		}
+
 		public static GameObject add_human(Vector2 pos , GameObject parent) {
 			GameObject instance = Instantiate(Resources.Load("GamePrefab/LittleHuman"),
 				pos, Quaternion.identity, parent.transform) as GameObject;
@@ -343,6 +347,8 @@ namespace SimuUtils
 		// Update is called once per frame
 		// count force 
 		private float K_CONST = 10.0f;
+		// 在Update里面打好表，每次即时读取表中的距离等数据
+		// 总消耗N人*N读 O(N^2), 但是少了N方次计算？
 		public void Update () {
 			if (in_disaster) {
 				foreach (HumanController c in father_containers.humans) {
@@ -380,15 +386,6 @@ namespace SimuUtils
 			p2p += 100.0f*(p2p-  (p2p.x * pfe.x + p2p.y * pfe.y) * pfe / pfe.magnitude);
 			Force all = /*fhe*/  b2p + pfe;
 			all += Vector2.Angle (all, rb.velocity) * K_CONST * all.normalized;
-
-			//            if (Vector3.Dot(rb.velocity, pfe) < 0)
-			//            {
-			//                Vector3 dir = new Vector3();
-			//                dir.x = pfe.x;
-			//                dir.y = pfe.y;
-			//                dir.z = 0;
-			//                this.rb.velocity = dir * 0;
-			//            }
 			this.rb.AddForce(all);
 			// DEBUG
 
@@ -415,6 +412,7 @@ namespace SimuUtils
 
 		private double LOWER_P2P_DELTA_LENGTH = 0.3;
 		private float P2P_K_CONST = 1.0f;
+		private double LOWEST_P2P_DELTA_LENGTH = 0.18;
 		private Force aux_mentally_p2p()
 		{
 			Force mental_force = new Force(0, 0);
@@ -430,12 +428,18 @@ namespace SimuUtils
 				if (distance >= MAX_COUNT_DISTANCE) {
 					continue;
 				}
-
 				Force cur_f = (float)(P2P_CONSTEXPR * Math.Exp ((-Vector3.Distance(this.transform.position, player.transform.position) - this.radius - player.radius) / MAX_MENTALLY_DISTANCE))
 					* get_direction_to_dest ();
 				if (distance <= LOWER_P2P_DELTA_LENGTH) {
 					// 小于距离
 					cur_f += Vector2.Angle(player.rb.velocity, this.rb.velocity) * P2P_K_CONST * cur_f.normalized;
+				} 
+				if (distance <= LOWEST_P2P_DELTA_LENGTH) {
+					float xf = Current_velocity.x;
+					float yf = Current_velocity.y;
+					Force added = new Force (-yf, xf);
+				
+					cur_f += added.normalized * cur_f.magnitude * 3;
 				}
 				mental_force += cur_f;
 			}
@@ -455,6 +459,7 @@ namespace SimuUtils
 
 				if (current_distance >= 0.18)
 					continue;
+				
 				Vector2 closest_point = controller.get_closest_point (this);
 				// Still this way...?
 				Vector2 b2p_direction = ((Vector2)this.transform.position - closest_point).normalized;
@@ -462,14 +467,7 @@ namespace SimuUtils
 				var cur_force = (float)(B2P_CONSTEXPR * Math.Exp (-current_distance / 5)) * b2p_direction;
 				f += -cur_force;
 				//// 身体接触力
-				//double physic_distance = current_distance;
-				//if (physic_distance < 0.01) {
-				//	Force normal = (float)(-physic_distance * B2P_PHY_CONST) * b2p_direction;
 
-				//	Vector2 tang_direc = get_tang_direct (b2p_direction, this, controller);
-				//	Force tangent = tang_direc * VectorMultiply (tang_direc, this.Current_velocity) * 20.0f * (float)current_distance;
-				//	f += (normal + tangent);
-				//}
 
 			}
 
