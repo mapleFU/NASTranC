@@ -321,12 +321,9 @@ namespace SimuUtils
 			}
 		}
 
-		private static Dictionary<BackgroundController, bool> init_dict = new Dictionary<BackgroundController, bool>();
+		private Dictionary<BackgroundController, bool> init_dict = new Dictionary<BackgroundController, bool>();
 
-		private static void static_init(BackgroundController bkg_script) {
-			if (init_dict.ContainsKey(bkg_script))
-				return;
-			
+		private void static_init(BackgroundController bkg_script) {
 			int cnt = 0;
 
 			foreach (float[,] farr in bkg_script.APF16) {
@@ -365,10 +362,10 @@ namespace SimuUtils
 		/*
 		 * 脚本初始化  
 		 */ 
-		private static int max_fixed_apf_count = 0;
+		private int max_fixed_apf_count = 0;
 		private Force last_pfe;
 		public override void Start () {
-			if (rnd.NextDouble() >= 0.7) {
+			if (rnd.NextDouble() >= 0.6) {
 				this.take_subway = true;
 			}
 			current_uid = human_uid++;
@@ -379,11 +376,11 @@ namespace SimuUtils
 			father_containers.humans.Add (this);
 
 
-
-			if (daddy.gameObject.name.Contains ("Second")) {
-				// 需要根据固定的apf来生成对应的场。
-				generate_fixed_apf();
-			}
+//			static_init ();
+//			if (daddy.gameObject.name.Contains ("Second")) {
+//				// 需要根据固定的apf来生成对应的场。
+//				generate_fixed_apf();
+//			}
 
 			rb = GetComponent<Rigidbody2D> ();
 			// 防止旋转
@@ -423,6 +420,13 @@ namespace SimuUtils
 			StartCoroutine (MyFunction (this.gameObject, FALLEN_TIME));
 		}
 
+		IEnumerator human_to_disaster_mode(float delayTime)
+		{
+			yield return new WaitForSeconds(delayTime);
+			this.to_disaster_mode ();
+			// Now do your thing here
+		}
+
 		// Update is called once per frame
 		// count force 
 		private float K_CONST = 10.0f;
@@ -437,9 +441,11 @@ namespace SimuUtils
 						continue;
 					// 直接的距离值
 					var distance = Vector2.Distance (c.current_position, current_position);
-					if (distance <= MAX_DISASTER_BROADCAST) {
+					// 百分之七十
+					if (distance <= MAX_DISASTER_BROADCAST && rnd.NextDouble() <= 0.7) {
 						// 小于距离
 						c.to_disaster_mode();
+//						StartCoroutine (human_to_disaster_mode (0.3f));
 					}
 				}
 			}
@@ -447,8 +453,6 @@ namespace SimuUtils
 			if (is_fallen) {
 				return;
 			}
-
-//			PersonAdder.checkScale (this, get_parent_script ());
 
 			// update speed
 			cur_speed = rb.velocity.magnitude;
@@ -473,6 +477,10 @@ namespace SimuUtils
 //			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
 //				get_parent_script().gameObject.name);
 			
+		}
+
+		private static void human_to_disaster_mode(HumanController cur) {
+			cur.to_disaster_mode();
 		}
 
 		private Force count_fhe()
@@ -663,7 +671,7 @@ namespace SimuUtils
 		private void generate_fixed_apf() {
 			BackgroundController bkg_script = get_parent_script ();
 			// 如果小与这个概率
-			if (rnd.NextDouble() <= 0.15) {
+			if (rnd.NextDouble() <= 0.5) {
 				fixed_apf = true;
 				int to_choose = (int)(rnd.NextDouble() * max_fixed_apf_count);
 				fixed_already_apf = float_arr [to_choose];
@@ -680,13 +688,14 @@ namespace SimuUtils
 			}
 		}
 		private float[,] get_apf() {
-			if (fixed_apf) {
-				if (fixed_already_apf != null) {
-					Debug.Log ("Fixed apf!");
-
-					return fixed_already_apf;
-				}
-			}
+			// DEBUG: temporary mark this 
+//			if (fixed_apf) {
+//				if (fixed_already_apf != null) {
+//					Debug.Log ("Fixed apf!");
+//
+//					return fixed_already_apf;
+//				}
+//			}
 			// 背景脚本
 			BackgroundController bkg_script = get_parent_script ();
 			float[,] needed_apf;
