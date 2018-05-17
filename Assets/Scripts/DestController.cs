@@ -31,7 +31,7 @@ namespace SimuUtils
 		}
 
 		// 可以设置的
-		private int person_per_wave = 1;	// 每一波添加的人，可以设置成相关的别的常数
+		private int person_per_wave = 5;	// 每一波添加的人，可以设置成相关的别的常数
 		private float add_time = 5;		// 时间相关的常数
 		/*
 		 * 

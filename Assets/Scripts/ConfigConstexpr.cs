@@ -31,9 +31,12 @@ namespace SimuUtils
 			return Instance;
 		}
 
+
 		private ConfigConstexpr () { 
 //			es_is_running = false;
-			has_disaster = false;
+			// 最初存在灾难
+			has_disaster = true;
+			human_add_able = false;
 		}
 
 		// 设置灾害出现

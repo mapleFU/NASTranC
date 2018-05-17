@@ -56,7 +56,7 @@ namespace SimuUtils
 		private bool IsElescator {
 			get { 
 				if (!filled_elescator) {
-					Debug.Log ("Not cc and uninited");
+//					Debug.Log ("Not cc and uninited");
 					return false;
 //					throw new System.SystemException ("Unfilled the elescator attr");
 				}
@@ -66,7 +66,7 @@ namespace SimuUtils
 		private bool IsStair {
 			get { 
 				if (!filled_elescator) {
-					Debug.Log ("Not cc and uninited");
+//					Debug.Log ("Not cc and uninited");
 					return false;
 //					throw new System.SystemException ("Unfilled the elescator attr");
 				}
@@ -113,13 +113,14 @@ namespace SimuUtils
 			{
 				GameObject game_obj = other.gameObject;
 				HumanController script = game_obj.GetComponent<HumanController> ();
-				if (!script.lift_available(this)) {
-					Debug.Log ("Lift not availabe");
+				if (script == null) {
+					Debug.Log ("Bad Human! Human here don't have script!");
 					return;
 				}
+
 				string parent_name = script.get_parent_script ().name;
 
-				if (in_cross_channel) {
+				if (in_cross_channel && !ConfigConstexpr.get_instance().has_disaster) {
 					if (parent_name.Contains ("First")) {
 						if (script.in_disaster)
 							return;
@@ -138,16 +139,14 @@ namespace SimuUtils
 							Debug.Log("二楼，乘地铁");
 							return;
 						}
-						if (IsElescator && !elescator_up) {
+						if (IsElescator && elescator_up) {
 							return;
 						}
 					}
 				}
 					
-				if (script == null) {
-					Debug.Log ("Bad Human! Human here don't have script!");
-					return;
-				}
+				// 变换灾害形象
+//				script.destroy_fixed_apf();
 
 				// 变换主从关系
 

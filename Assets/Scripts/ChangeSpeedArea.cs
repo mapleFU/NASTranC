@@ -39,7 +39,7 @@ public class ChangeSpeedArea :  BaseChildObject
 			}
 		}
 		collider_object.GetComponent<Rigidbody2D>().isKinematic = true;
-		Invoke ("setNonstatic", 0.5f);
+//		Invoke ("setNonstatic", 0.5f);
 		StartCoroutine (MyFunction (collider_object, 0.5f));
 	}
 

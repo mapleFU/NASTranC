@@ -6,6 +6,21 @@ using SimuUtils;
 namespace SimuUtils {
 	public class DisasterBase : BaseChildObject
 	{
+		/**
+		 * 
+		 */ 
+		private float DELTA_RATE = 0.002f;
+		/**
+		 *  更新圆形的半径
+		 */ 
+		private void _update_round() {
+			Vector3 current_scale = transform.localScale;
+			current_scale.x = (float)((1 + DELTA_RATE) * current_scale.x);
+			current_scale.y = (float)((1 + DELTA_RATE) * current_scale.y);
+			transform.localScale = current_scale;
+			Invoke ("_update_round", 1f);
+		}
+			
 		public static void StartDisaster() {
 			Debug.LogWarning ("Disaster !!!!!!!!!!!!!Boooooooooooooom!!!!!!!!!");
 			var father = GameObject.Find ("SecondLayer");
@@ -21,6 +36,7 @@ namespace SimuUtils {
 		void Start() {
 			base.Start ();
 			father_script = get_parent_script ();
+			Invoke ("_update_round", 1.3f);
 		}
 		private BackgroundController father_script;
 		// 火灾最大传播空间
@@ -45,6 +61,7 @@ namespace SimuUtils {
 					human.to_disaster_mode ();
 				} 
 			}
+
 		}
 	}
 

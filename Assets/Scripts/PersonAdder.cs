@@ -30,9 +30,17 @@ public class PersonAdder : MonoBehaviour
 				script.transform.localScale = new Vector3 (0.02f, 0.3f, 5f) * resizeRate;
 			}
 		}
+	
+
 		script.gameObject.layer = to_script.gameObject.layer;
 //		script.transform.rotation = rotate;
 		HelperScript.change_z (script);
+	}
+
+	public static void checkScale(HumanController c, BackgroundController bkg_layer) {
+		return;
+
+//		}
 	}
 }
 

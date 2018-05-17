@@ -126,6 +126,7 @@ namespace SimuUtils {
 		 */
         public bool on_stair_or_not() {
             // 有父亲的话则为stair。
+			// 在Stair上则返回true
             return transform.parent != null;
         }
 

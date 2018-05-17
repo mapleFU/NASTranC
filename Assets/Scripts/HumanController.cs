@@ -58,8 +58,9 @@ namespace SimuUtils
 			Color c = sr.color;
 			bool colored = false;
 			Color resp_c = Color.black;
+			take_subway = false;
 			bool color_in_mode = false, color_in_upper_mode = false;
-			foreach (Color cr in this.corespond_color) {
+			foreach (Color cr in HumanController.corespond_color) {
 				if (cr == c) {
 					resp_c = cr;
 					colored = true;
@@ -67,9 +68,9 @@ namespace SimuUtils
 				}
 			}
 			if (colored) {
-				sr.color = this.upper_corespond_color [this.color_to_num [resp_c]];
+				sr.color = HumanController.upper_corespond_color [HumanController.color_to_num [resp_c]];
 			} else {
-				foreach (Color cr in this.upper_corespond_color) {
+				foreach (Color cr in HumanController.upper_corespond_color) {
 					if (cr == c) {
 						resp_c = cr;
 						return;
@@ -320,31 +321,34 @@ namespace SimuUtils
 			}
 		}
 
+		private static Dictionary<BackgroundController, bool> init_dict = new Dictionary<BackgroundController, bool>();
 
+		private static void static_init(BackgroundController bkg_script) {
+			if (init_dict.ContainsKey(bkg_script))
+				return;
+			
+			int cnt = 0;
 
-		/*
-		 * 脚本初始化  
-		 */ 
-		private Force last_pfe;
-		public override void Start () {
-			current_uid = human_uid++;
-			// to myself first.
-			//			Debug.Log("Human want's to start.");
-			var daddy = get_parent_script();
-			//			Debug.Log ("Human's daddy :" + daddy.gameObject);
-			father_containers = daddy.childObjects;
-			father_containers.humans.Add (this);
+			foreach (float[,] farr in bkg_script.APF16) {
+				if (farr == null)
+					continue;
 
-			// init data contains
-			float_arr [0] = daddy.APF01;
-			float_arr [1] = daddy.APF11;
-			float_arr [2] = daddy.APF02;
-			float_arr [3] = daddy.APF12;
+				float_arr [cnt++] = farr;	
+				if (cnt == 6) {
+					break;
+				}
+			}
+			foreach (float[,] farr in float_arr) {
+				Debug.Log ("Farr " + farr);
+			}
+			max_fixed_apf_count = cnt;
 
 			corespond_color [0] = Color.blue;
 			corespond_color [1] = Color.yellow;
 			corespond_color [2] = Color.cyan;
 			corespond_color [3] = Color.magenta;
+			corespond_color [4] = new Color (0.2f, 0.3f, 0.4f);
+			corespond_color [5] = new Color (1.0f, 0.3f, 0.8f);
 
 			upper_corespond_color [0] = new Color (0.2f, 0.3f, 0.4f);
 			upper_corespond_color [1] = new Color (1.0f, 0.3f, 0.8f);
@@ -356,9 +360,25 @@ namespace SimuUtils
 				color_to_num [corespond_color [i]] = i;
 				upper_color_to_num [upper_corespond_color [i]] = i;
 			}
-//			private float[][,] float_arr = new float[4][,];
-//			private Color[] corespond_color = new Color[4];
-//			private Dictionary<Color, int> color_to_num = new Dictionary<Color, int>();
+		}
+
+		/*
+		 * 脚本初始化  
+		 */ 
+		private static int max_fixed_apf_count = 0;
+		private Force last_pfe;
+		public override void Start () {
+			if (rnd.NextDouble() >= 0.7) {
+				this.take_subway = true;
+			}
+			current_uid = human_uid++;
+
+			var daddy = get_parent_script();
+			//			Debug.Log ("Human's daddy :" + daddy.gameObject);
+			father_containers = daddy.childObjects;
+			father_containers.humans.Add (this);
+
+
 
 			if (daddy.gameObject.name.Contains ("Second")) {
 				// 需要根据固定的apf来生成对应的场。
@@ -428,6 +448,8 @@ namespace SimuUtils
 				return;
 			}
 
+//			PersonAdder.checkScale (this, get_parent_script ());
+
 			// update speed
 			cur_speed = rb.velocity.magnitude;
 			if(cur_speed >= exc_speed)//如果算出来的当前速度大于预期速度 那么就要调整大小
@@ -448,8 +470,8 @@ namespace SimuUtils
 			this.rb.AddForce(all);
 			// DEBUG
 
-			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
-				get_parent_script().gameObject.name);
+//			Debug.Log ("POS: " + this.current_position + " with "+ get_parent_script().pos2mapv(this.current_position) + " and force " + all + " with father name " + 
+//				get_parent_script().gameObject.name);
 			
 		}
 
@@ -569,22 +591,25 @@ namespace SimuUtils
 		 */ 
 		// 上一次可以的apf
 		private float[,] last_used_apf = null;
-		private float[,] find_min_apf(List<float[,]> apf_list, int cur_x, int cur_y) {
+		private float[,] find_min_apf(List<float[,]> apf_list, int cur_x, int cur_y, ref int arg) {
 			// TODO:test and DEBUG in this function
-
+			arg = -1;
 			if (apf_list == null) {
 				Debug.LogError ("May because that apf_list is null.");
 			}
 
 			float[,] min_arr = null;
 			float min_value = 300000;		// 设置一个很大的初值
+			int cnt = 0;
 			try {
 				foreach (float[,] arr in apf_list) {
 					float aaa = arr[cur_x, cur_y];
 					if (aaa < min_value && aaa >= 0) {
 						min_value = arr [cur_x, cur_y];
 						min_arr = arr;
+						arg = cnt;
 					}
+					++cnt;
 				}
 			} catch (Exception e) {
 				Debug.LogError ("Error pos: " + transform.position + " and mapv"
@@ -594,16 +619,6 @@ namespace SimuUtils
 			}
 
 			if (min_arr == null) {
-				//				Debug.LogError ("MIN_ARR IS NULL. 无法找到对应的目标。");
-				//				if (apf_list == null) {
-				//					Debug.LogError ("May because that apf_list is null.");
-				//				} else {
-				//					
-				//					Debug.LogError ("But apf_list is not null with size" + apf_list.Count);
-				//					Debug.Log ("Minvalue: " + min_value + " with position: (" + cur_x +", " + cur_y + ")" + " and father scale: " + 
-				//						get_parent_script().get_pf_scale());
-				//					
-				//				}
 				min_arr = last_used_apf;
 			}
 
@@ -628,20 +643,29 @@ namespace SimuUtils
 		/// </summary>
 //		private Random rnd = new Random();
 
-		private float[][,] float_arr = new float[4][,];
-		private Color[] corespond_color = new Color[4];
-		private Dictionary<Color, int> color_to_num = new Dictionary<Color, int>();
-		private Color[] upper_corespond_color = new Color[4];
-		private Dictionary<Color, int> upper_color_to_num = new Dictionary<Color, int>();
+		private static float[][,] float_arr = new float[6][,];
+		private static Color[] corespond_color = new Color[6];
+		private static Dictionary<Color, int> color_to_num = new Dictionary<Color, int>();
+		private static Color[] upper_corespond_color = new Color[4];
+		private static Dictionary<Color, int> upper_color_to_num = new Dictionary<Color, int>();
+
+		public void destroy_fixed_apf() {
+			if (!fixed_apf) {
+				return;
+			}
+			// destory the bad apf
+			fixed_apf = false;
+			var sr = GetComponent<SpriteRenderer> ();
+			sr.color = Color.black;
+		}
 
 		// 按照一定的可能性，生成对应的fixed_apf
 		private void generate_fixed_apf() {
-			float[][,] float_arr = new float[4][,];
 			BackgroundController bkg_script = get_parent_script ();
 			// 如果小与这个概率
-			if (rnd.NextDouble() <= 0.1) {
+			if (rnd.NextDouble() <= 0.15) {
 				fixed_apf = true;
-				int to_choose = (int)(rnd.NextDouble() * 4);
+				int to_choose = (int)(rnd.NextDouble() * max_fixed_apf_count);
 				fixed_already_apf = float_arr [to_choose];
 
 				// change color
@@ -657,7 +681,11 @@ namespace SimuUtils
 		}
 		private float[,] get_apf() {
 			if (fixed_apf) {
-				return fixed_already_apf;
+				if (fixed_already_apf != null) {
+					Debug.Log ("Fixed apf!");
+
+					return fixed_already_apf;
+				}
 			}
 			// 背景脚本
 			BackgroundController bkg_script = get_parent_script ();
@@ -666,6 +694,12 @@ namespace SimuUtils
 
 			// 获得现在的x y坐标
 			int cur_x = (int)pos.x, cur_y = (int)pos.y;
+			bool if_print = false;
+			string debug_str;
+			int pos_in_list = 0;
+			if (bkg_script.gameObject.name.Contains ("Second")) {
+				if_print = true;
+			}
 
 			if (!bkg_script.on_stair_or_not ()) {
 				// 在楼层上
@@ -676,18 +710,19 @@ namespace SimuUtils
 						// 要乘车
 						if (in_disaster) {
 							needed_apf = bkg_script.APF01;
-							Debug.Log ("Choose APF01");
+
+							debug_str = ("Choose APF01");
 						} else {
 							needed_apf = bkg_script.APF11;
-							Debug.Log ("Choose APF11");
+							debug_str =  ("Choose APF11");
 						}
 					} else {
 						if (in_disaster) {
 							needed_apf = bkg_script.APF02;
-							Debug.Log ("Choose APF02");
+							debug_str =  ("Choose APF02");
 						} else {
 							needed_apf = bkg_script.APF12;
-							Debug.Log ("Choose APF12");
+							debug_str =  ("Choose APF12");
 						}
 
 					}
@@ -700,31 +735,33 @@ namespace SimuUtils
 					if (take_subway) {
 						if (in_disaster) {
 							search_list = bkg_script.APF05;
-							Debug.Log ("Choose APF05");
+							debug_str =  ("Choose APF05");
 						} else {
 							search_list = bkg_script.APF15;
-							Debug.Log ("Choose APF15");
+							debug_str =  ("Choose APF15");
 						}
 
 					} else {
 						if (in_disaster) {
 							search_list = bkg_script.APF06;
-							Debug.Log ("Choose APF06");
+							debug_str =  ("Choose APF06");
 						} else {
 							search_list = bkg_script.APF16;
-							Debug.Log ("Choose APF16");
+							debug_str =  ("Choose APF16");
 						}
 
 					}
 
 					const float MIN_V = 30.0f;
 					// 找到最小的数组
-					float[,] min_arr = find_min_apf (search_list, cur_y, cur_x);
+					float[,] min_arr = find_min_apf (search_list, cur_y, cur_x, ref pos_in_list);
 					needed_apf = min_arr;
 					// 先直接找最近的出口吧，这个逻辑恨坑的
 					init_destine ();
 				}
-
+				if (if_print) {
+					Debug.Log (debug_str + " and pos " + pos_in_list);
+				}
 
 			} else {
 				// 如果在楼梯／扶梯上
