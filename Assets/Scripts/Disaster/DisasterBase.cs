@@ -9,7 +9,7 @@ namespace SimuUtils {
 		/**
 		 * 
 		 */ 
-		private float DELTA_RATE = 0.002f;
+		private float DELTA_RATE = 0.1f;
 		/**
 		 *  更新圆形的半径
 		 */ 
@@ -18,7 +18,7 @@ namespace SimuUtils {
 			current_scale.x = (float)((1 + DELTA_RATE) * current_scale.x);
 			current_scale.y = (float)((1 + DELTA_RATE) * current_scale.y);
 			transform.localScale = current_scale;
-			Invoke ("_update_round", 1f);
+			Invoke ("_update_round", 0.9f);
 		}
 			
 		public static void StartDisaster() {
@@ -40,7 +40,7 @@ namespace SimuUtils {
 		}
 		private BackgroundController father_script;
 		// 火灾最大传播空间
-		private float max_broadcast = 6.0f;
+		private float max_broadcast = 0.7f;
 
 		const float FIRE_EXPR = 15.0f;
 		Vector2 fire_force_to_human(HumanController human_c) {
@@ -59,9 +59,17 @@ namespace SimuUtils {
 					rb.AddForce (fire_force_to_human(human));
 					Debug.Log ("灾害爆发，让世界感受痛苦！");
 					human.to_disaster_mode ();
+//					StartCoroutine (human_to_disaster_mode(human, 0.5f));
 				} 
 			}
 
+		}
+
+		IEnumerator human_to_disaster_mode(HumanController c, float delayTime)
+		{
+			yield return new WaitForSeconds(delayTime);
+			c.to_disaster_mode ();
+			// Now do your thing here
 		}
 	}
 

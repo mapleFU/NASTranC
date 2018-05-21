@@ -38,7 +38,7 @@ namespace SimuUtils
 		public void initElescator(bool up_elescator) {
 			if (filled_elescator) {
 				return;
-//				throw new System.SystemException ("Filled already!");
+				//				throw new System.SystemException ("Filled already!");
 			}
 			is_elescator = true;
 			elescator_up = up_elescator;
@@ -47,7 +47,7 @@ namespace SimuUtils
 		public void initStair() {
 			if (filled_elescator) {
 				return;
-//				throw new System.SystemException ("Filled already!");
+				//				throw new System.SystemException ("Filled already!");
 			}
 			is_elescator = false;
 			filled_elescator = true;
@@ -56,9 +56,9 @@ namespace SimuUtils
 		private bool IsElescator {
 			get { 
 				if (!filled_elescator) {
-//					Debug.Log ("Not cc and uninited");
+					Debug.Log ("Not cc and uninited");
 					return false;
-//					throw new System.SystemException ("Unfilled the elescator attr");
+					//					throw new System.SystemException ("Unfilled the elescator attr");
 				}
 				return is_elescator;
 			}
@@ -66,9 +66,9 @@ namespace SimuUtils
 		private bool IsStair {
 			get { 
 				if (!filled_elescator) {
-//					Debug.Log ("Not cc and uninited");
+					Debug.Log ("Not cc and uninited");
 					return false;
-//					throw new System.SystemException ("Unfilled the elescator attr");
+					//					throw new System.SystemException ("Unfilled the elescator attr");
 				}
 				return !is_elescator;
 			}	
@@ -78,7 +78,7 @@ namespace SimuUtils
 
 		public override void Start()
 		{
-			
+
 			var daddy = get_parent_script ();	// 获得父对象
 			base.Start ();
 
@@ -86,14 +86,14 @@ namespace SimuUtils
 				daddy.childObjects.dests.Add (this);
 			}
 
-//			bkg_ctrl = this.gameObject.transform.parent.gameObject.GetComponent<BackgroundController> ();
+			//			bkg_ctrl = this.gameObject.transform.parent.gameObject.GetComponent<BackgroundController> ();
 			bkg_ctrl = daddy;
 			if (!bkg_ctrl) {
 				// if background controller is null
-//				Debug.Log ("Lift should be a component of the background!");
+				//				Debug.Log ("Lift should be a component of the background!");
 				return;
 			} else {
-				
+
 				Debug.Log (this.gameObject.name + " and father " + get_parent_script().gameObject + " and is ele " + IsElescator + " and is stair " + IsStair + " and ele up " + elescator_up );		
 
 				var lift = to.GetComponent<LiftController> ();
@@ -105,7 +105,7 @@ namespace SimuUtils
 		// DO nothing in awake!!!!!
 		public void Awake() {}
 
-//		private static Interlocked atom_lock = new Interlocked();
+		//		private static Interlocked atom_lock = new Interlocked();
 		private int pass_by_cnt = 0;
 		protected virtual void OnTriggerEnter2D (Collider2D other)
 		{
@@ -113,11 +113,10 @@ namespace SimuUtils
 			{
 				GameObject game_obj = other.gameObject;
 				HumanController script = game_obj.GetComponent<HumanController> ();
-				if (script == null) {
-					Debug.Log ("Bad Human! Human here don't have script!");
+				if (!script.lift_available(this)) {
+					Debug.Log ("Lift not availabe");
 					return;
 				}
-
 				string parent_name = script.get_parent_script ().name;
 
 				if (in_cross_channel && !ConfigConstexpr.get_instance().has_disaster) {
@@ -139,14 +138,16 @@ namespace SimuUtils
 							Debug.Log("二楼，乘地铁");
 							return;
 						}
-						if (IsElescator && elescator_up) {
+						if (IsElescator && !elescator_up) {
 							return;
 						}
 					}
 				}
-					
-				// 变换灾害形象
-//				script.destroy_fixed_apf();
+
+				if (script == null) {
+					Debug.Log ("Bad Human! Human here don't have script!");
+					return;
+				}
 
 				// 变换主从关系
 
@@ -211,6 +212,6 @@ namespace SimuUtils
 
 			}
 		}
-			
+
 	}
 }

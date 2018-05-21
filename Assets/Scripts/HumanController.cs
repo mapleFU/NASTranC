@@ -365,9 +365,9 @@ namespace SimuUtils
 		private int max_fixed_apf_count = 0;
 		private Force last_pfe;
 		public override void Start () {
-			if (rnd.NextDouble() >= 0.6) {
-				this.take_subway = true;
-			}
+//			if (rnd.NextDouble() >= 0.6) {
+//				this.take_subway = true;
+//			}
 			current_uid = human_uid++;
 
 			var daddy = get_parent_script();
@@ -376,11 +376,11 @@ namespace SimuUtils
 			father_containers.humans.Add (this);
 
 
-//			static_init ();
-//			if (daddy.gameObject.name.Contains ("Second")) {
-//				// 需要根据固定的apf来生成对应的场。
-//				generate_fixed_apf();
-//			}
+			static_init (get_parent_script());
+			if (daddy.gameObject.name.Contains ("Second")) {
+				// 需要根据固定的apf来生成对应的场。
+				generate_fixed_apf();
+			}
 
 			rb = GetComponent<Rigidbody2D> ();
 			// 防止旋转
@@ -389,7 +389,7 @@ namespace SimuUtils
 
 			init_radius ();
 			init_weight ();
-			//init_destine ();
+			init_destine ();
 			init_speed ();
 
 			//			Debug.Log ("New Human: position:" + transform.position +", and map_position: " + daddy.pos2mapv(transform.position));
@@ -432,20 +432,21 @@ namespace SimuUtils
 		private float K_CONST = 10.0f;
 		// 在Update里面打好表，每次即时读取表中的距离等数据
 		// 总消耗N人*N读 O(N^2), 但是少了N方次计算？
+		private bool broadcasted = false;
 		public void Update () {
 			if (in_disaster) {
 				foreach (HumanController c in father_containers.humans) {
 					if (c == this || c.gameObject.activeSelf == false)
 						continue;
-					if (c.in_disaster)
+					if (c.in_disaster || broadcasted)
 						continue;
 					// 直接的距离值
 					var distance = Vector2.Distance (c.current_position, current_position);
 					// 百分之七十
 					if (distance <= MAX_DISASTER_BROADCAST && rnd.NextDouble() <= 0.7) {
 						// 小于距离
-						c.to_disaster_mode();
-//						StartCoroutine (human_to_disaster_mode (0.3f));
+						StartCoroutine (human_to_disaster_mode (1.5f));
+						broadcasted = true;
 					}
 				}
 			}
@@ -479,9 +480,9 @@ namespace SimuUtils
 			
 		}
 
-		private static void human_to_disaster_mode(HumanController cur) {
-			cur.to_disaster_mode();
-		}
+//		private static void human_to_disaster_mode(HumanController cur) {
+//			cur.to_disaster_mode();
+//		}
 
 		private Force count_fhe()
 		{
@@ -580,6 +581,9 @@ namespace SimuUtils
 
 		private Vector2 get_direction_to_dest()
 		{
+			if (dest == null) {
+				Debug.LogError ("Dest is null here.");
+			}
 			Vector3 dir = dest.transform.position - transform.position;
 			dir.z = 0;
 			return dir.normalized;
@@ -645,7 +649,7 @@ namespace SimuUtils
 		/**
 		 * 选中的固定的apf
 		 */ 
-		private float[,] fixed_already_apf;
+		private float[,] fixed_already_apf = null;
 		/// <summary>
 		/// 随机数生成用rnd
 		/// </summary>
@@ -688,14 +692,16 @@ namespace SimuUtils
 			}
 		}
 		private float[,] get_apf() {
-			// DEBUG: temporary mark this 
-//			if (fixed_apf) {
-//				if (fixed_already_apf != null) {
-//					Debug.Log ("Fixed apf!");
-//
-//					return fixed_already_apf;
-//				}
-//			}
+//			// DEBUG: temporary mark this 
+			if (fixed_apf) {
+				if (fixed_already_apf != null) {
+					Debug.Log ("Fixed apf!");
+
+					return fixed_already_apf;
+				} else {
+					Debug.LogError ("你这还有问题...");
+				}
+			}
 			// 背景脚本
 			BackgroundController bkg_script = get_parent_script ();
 			float[,] needed_apf;

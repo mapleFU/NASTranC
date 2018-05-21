@@ -45,8 +45,8 @@ public class MetroController : BaseChildObject
 	 * 地铁站会有人下车
 	 * 在这里填写下车的逻辑
 	 */
-	private float wait_time = 10.0f;		// 每波车等待的事件
-    private float down_time = 20.0f;		// 允许上车时间间隔
+	private float wait_time = 5.0f;		// 每波车等待的事件
+    private float down_time = 10.0f;		// 允许上车时间间隔
 	private int per_wave = 15;		// 每一波的人
 
 	private bool can_go_up;		// 可以上车
@@ -111,7 +111,7 @@ public class MetroController : BaseChildObject
 
 	void Awake()  {
 		//TODO: DEBUG!!!!
-		Invoke ("invoked", down_time);
+		Invoke ("invoked", 2.5f);
 	}
 
 	/*
@@ -132,6 +132,8 @@ public class MetroController : BaseChildObject
 			} 
 		}
 	}
+
+
 
 	void OnTriggerStay2D( Collider2D other) {
 		OnTriggerEnter2D (other);

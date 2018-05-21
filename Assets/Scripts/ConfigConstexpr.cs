@@ -35,8 +35,8 @@ namespace SimuUtils
 		private ConfigConstexpr () { 
 //			es_is_running = false;
 			// 最初存在灾难
-			has_disaster = false;
-			human_add_able = true;
+			has_disaster = true;
+			human_add_able = false;
 		}
 
 		// 设置灾害出现
